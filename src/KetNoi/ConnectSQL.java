@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConnectSQL {
 
     public static Connection connection;
-    private static String computer = "DESKTOP-I6D6J0Q\\SQLEXPRESS";
+    private static String computer = "TTTV-02";
     // login SQL with full parameter
 
     public ConnectSQL(String computer, String database, String user, String pass) {
@@ -54,14 +54,14 @@ public class ConnectSQL {
     }
 
     /*	TEST CODE*/
-//    public static void main(String[] args){ 
-//        ConnectSQL connectSQL;
-//        connectSQL = new ConnectSQL(computer, "ThiTracNghiem");
-//        if (connection == null) {
-//            System.out.println("Kết nối thất bại!");
-//        } else {
-//            System.out.println("Kết nối thành công!");
-//        }
-//    }
+    public static void main(String[] args){ 
+        ConnectSQL connectSQL;
+        connectSQL = new ConnectSQL(computer, "ThiTracNghiem");
+        if (connection == null) {
+            System.out.println("Kết nối thất bại!");
+        } else {
+            System.out.println("Kết nối thành công!");
+        }
+    }
 
 }
