@@ -40,6 +40,7 @@ import javax.swing.UIManager;
 
 import KetNoi.Access;
 import java.sql.SQLException;
+import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 
 public class frmSinhVien extends JFrame {
@@ -51,10 +52,7 @@ public class frmSinhVien extends JFrame {
     private JScrollPane spDapAn;
     private final ArrayList<CauHoi> listCauHoi;
     private JTextArea txtCauHoi, txtA, txtB, txtC, txtD;
-    private int soCauHoi, cauHienTai, soCauTraLoi, cauTruoc;
-    /*	cauTruoc dùng để xóa background của spDapAn sau khi 
-	 * chuyển câu
-	 * */
+    private int soCauHoi, cauHienTai, soCauTraLoi, cauTruoc; 
     private JRadioButton[][] rdbtns;
     private JButton[] btnCau;
     private boolean[] cauDung;
@@ -215,7 +213,7 @@ public class frmSinhVien extends JFrame {
                 lblTickD.setVisible(true);
                 rdbtns[cauHienTai][3].setSelected(true);
             }
-        };;
+        };
 
         addActionlbl_Mouse(lblPre);
         addActionlbl_Mouse(lblNext);
@@ -293,10 +291,8 @@ public class frmSinhVien extends JFrame {
                     btnCau[i].setForeground(Color.red);
                 }
             } else {
-
                 btnCau[i].setForeground(Color.red);
             }
-
             i++;
         }
         // strChon xong nhiệm vụ, giờ nó sẽ lưu format của điểm
@@ -420,6 +416,7 @@ public class frmSinhVien extends JFrame {
                 }
             }
 
+            @Override
             public void mouseClicked(MouseEvent e) {
                 if (lbl == lblNext) {
                     actionNext();
@@ -758,7 +755,8 @@ public class frmSinhVien extends JFrame {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println("exeption: "+e.getMessage());
         }
         new frmSinhVien().showWindows();
     }
