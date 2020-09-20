@@ -2,8 +2,12 @@ package GiaoDien2;
 
 import KetNoi.ConnectSQL;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import model.CauHoi;
 
 public class frmSinhVien extends javax.swing.JFrame {
@@ -37,6 +42,10 @@ public class frmSinhVien extends javax.swing.JFrame {
     }
 
     private void myCustom() {
+
+        setSize(840, 480);
+        setLocationRelativeTo(null);
+
         setLocationRelativeTo(null);
         setResizable(false);
         formatTxt(txtB);
@@ -51,6 +60,8 @@ public class frmSinhVien extends javax.swing.JFrame {
         formatJScrollPane(jScrollPane5);
 
         txtCauHoi.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        loadRdBtnForPnDapAn(20);
     }
 
     private void getCauHoi() {
@@ -88,10 +99,19 @@ public class frmSinhVien extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.out.println("frmSinhVien.getCauHoi2(): " + e.getMessage());
-        }finally{
-            try{ statement.close();}catch(SQLException e){}
-            try{ resultSet.close();}catch(SQLException e){}
-            try{ connect.connection.close();}catch(Exception e){}
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+            }
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+            }
+            try {
+                connect.connection.close();
+            } catch (Exception e) {
+            }
 
         }
     }
@@ -125,7 +145,7 @@ public class frmSinhVien extends javax.swing.JFrame {
 
                     action_ChuyenCau(rdbtns[hang][cot - 1], hang);
 
-                    pnDapAn.add(rdbtns[hang][cot - 1]);
+//                    pnDapAn.add(rdbtns[hang][cot - 1]);
                 } else {
                     btnCau[hang] = new JButton("  " + (hang + 1));
                     btnCau[hang].setHorizontalAlignment(JLabel.LEFT);
@@ -138,12 +158,62 @@ public class frmSinhVien extends javax.swing.JFrame {
                     btnCau[hang].setContentAreaFilled(false);
                     action_ChuyenCau(btnCau[hang], hang);
 
-                    pnDapAn.add(btnCau[hang]);
+//                    pnDapAn.add(btnCau[hang]);
                 }
                 cot++;
             }
             hang++;
         }
+    }
+
+    private void loadRdBtnForPnDapAn(int soCauHoi) {
+//        jScrollPane6.getViewport().setOpaque(false);
+//        jScrollPane6.setOpaque(false);
+        rdbtns = new JRadioButton[soCauHoi][4];
+        btnCau = new JButton[soCauHoi];
+
+        int hang = 0, cot = 0;
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        while (hang < soCauHoi) {
+            ButtonGroup btnGroup = new ButtonGroup();
+
+            btnCau[hang] = new JButton((hang + 1) + "");
+            btnCau[hang].setFocusPainted(true);
+            btnCau[hang].setBorderPainted(true);
+            btnCau[hang].setFont(pnDapAn.getFont());
+            btnCau[hang].setBorder(null);
+            btnCau[hang].setOpaque(true);
+            
+            btnCau[hang].setBackground(Color.yellow);
+            btnCau[hang].setContentAreaFilled(true);
+
+            addToPn(btnCau[hang], 0, hang,32);
+            cot = 0;
+            while (cot < 4) {
+                rdbtns[hang][cot] = new JRadioButton(){
+                    @Override
+                    public void setOpaque(boolean bln) {
+                        super.setOpaque(false);
+                    }
+                };
+                addToPn(rdbtns[hang][cot], cot + 1, hang, 40);
+                btnGroup.add(rdbtns[hang][cot]);
+                cot++;
+            }
+
+            hang++;
+        }
+    }
+    
+    private final Insets insets = new Insets(0, 0, 0, 0);
+
+    private void addToPn(Component component, int gridx, int gridy, int width) {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints(gridx, gridy, 1, 1, 1.0, 1.0,
+                GridBagConstraints.CENTER, GridBagConstraints.CENTER, insets, 0, 0);
+        
+        component.setPreferredSize(new Dimension(width,30));
+        
+        pnDapAn.add(component, gridBagConstraints);
     }
 
     private void action_ChuyenCau(AbstractButton rdbtn, int n) {
@@ -155,21 +225,21 @@ public class frmSinhVien extends javax.swing.JFrame {
     }
 
     private void chuyenCau() {
-        disableLblTick();
-        txtCauHoi.setText("Câu " + (cauHienTai + 1) + ": " + listCauHoi.get(cauHienTai).noiDung);
-        txtA.setText(listCauHoi.get(cauHienTai).dapAn0);
-        txtB.setText(listCauHoi.get(cauHienTai).dapAn1);
-        txtC.setText(listCauHoi.get(cauHienTai).dapAn2);
-        txtD.setText(listCauHoi.get(cauHienTai).dapAn3);
-
-        enableLblTick_pnDapAn();
-        batMauChoDapAn();
-
-        spDapAn.getVerticalScrollBar().setValue(rdbtns[cauHienTai][0].getY() - 157);
-
-        if (!dangLamBai) {
-            showDapAnDung();
-        }
+//        disableLblTick();
+//        txtCauHoi.setText("Câu " + (cauHienTai + 1) + ": " + listCauHoi.get(cauHienTai).noiDung);
+//        txtA.setText(listCauHoi.get(cauHienTai).dapAn0);
+//        txtB.setText(listCauHoi.get(cauHienTai).dapAn1);
+//        txtC.setText(listCauHoi.get(cauHienTai).dapAn2);
+//        txtD.setText(listCauHoi.get(cauHienTai).dapAn3);
+//
+//        enableLblTick_pnDapAn();
+//        batMauChoDapAn();
+//
+//        spDapAn.getVerticalScrollBar().setValue(rdbtns[cauHienTai][0].getY() - 157);
+//
+//        if (!dangLamBai) {
+//            showDapAnDung();
+//        }
     }
 
     private void formatTxt(JTextArea txt) {
@@ -199,7 +269,7 @@ public class frmSinhVien extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
-        jPanel1 = new javax.swing.JPanel();
+        pnDapAn = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtCauHoi = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -243,10 +313,11 @@ public class frmSinhVien extends javax.swing.JFrame {
         jScrollPane6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jScrollPane6.setOpaque(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setOpaque(false);
-        jPanel1.setLayout(new java.awt.GridBagLayout());
-        jScrollPane6.setViewportView(jPanel1);
+        pnDapAn.setBackground(new java.awt.Color(255, 255, 255));
+        pnDapAn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pnDapAn.setOpaque(false);
+        pnDapAn.setLayout(new java.awt.GridBagLayout());
+        jScrollPane6.setViewportView(pnDapAn);
 
         getContentPane().add(jScrollPane6);
         jScrollPane6.setBounds(601, 107, 232, 371);
@@ -320,13 +391,13 @@ public class frmSinhVien extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JPanel pnDapAn;
     private javax.swing.JTextArea txtA;
     private javax.swing.JTextArea txtB;
     private javax.swing.JTextArea txtC;
