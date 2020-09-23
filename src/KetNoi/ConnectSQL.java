@@ -2,11 +2,7 @@ package KetNoi;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ConnectSQL {
 
@@ -17,7 +13,7 @@ public class ConnectSQL {
     public ConnectSQL(String computer, String database, String user, String pass) {
         connection = null;
         String url = String.format("jdbc:sqlserver:%s:1433; databasename=%s; username=%s; password=",
-                computer,database,user,pass);
+                computer, database, user, pass);
         try {
             Class.forName(
                     "com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -31,8 +27,8 @@ public class ConnectSQL {
     public ConnectSQL(String computer, String database) {
         connection = null;
         String url = String.format("jdbc:sqlserver://%s:1433;databaseName=%s;integratedSecurity=true;",
-                computer,database);
-        
+                computer, database);
+
         try {
             Class.forName(
                     "com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -41,11 +37,12 @@ public class ConnectSQL {
             System.out.println("Lỗi kết nối sql: " + e.getMessage());
         }
     }
-    public ConnectSQL(){
+
+    public ConnectSQL() {
         connection = null;
         String url = String.format("jdbc:sqlserver://%s:1433;databaseName=%s;integratedSecurity=true;",
-                computer,"ThiTracNghiem");
-        
+                computer, "ThiTracNghiem");
+
         try {
             Class.forName(
                     "com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -56,7 +53,7 @@ public class ConnectSQL {
     }
 
     /*	TEST CODE*/
-    public static void main(String[] args){ 
+    public static void main(String[] args) {
         ConnectSQL connectSQL;
         connectSQL = new ConnectSQL(computer, "ThiTracNghiem");
         if (connection == null) {

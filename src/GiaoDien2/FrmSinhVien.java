@@ -20,23 +20,23 @@ import javax.swing.ButtonGroup;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import model.CauHoi;
 
-public class frmSinhVien extends javax.swing.JFrame {
+public class FrmSinhVien extends JFrame {
 
     private final ArrayList<CauHoi> lstCauHoi = new ArrayList<>();
     private int soCauHoi, cauHienTai, soCauTraLoi, cauTruoc;
     private JRadioButton[][] rdbtns;
     private JButton[] btnCau;
 
-    public frmSinhVien() {
+    public FrmSinhVien() {
         initComponents();
         myCustom();
     }
@@ -86,10 +86,10 @@ public class frmSinhVien extends javax.swing.JFrame {
 
                 Collections.shuffle(listDapAn);
 
-                cauHoi.arrDapAn[0] = "A. " + listDapAn.get(0);
-                cauHoi.arrDapAn[1] = "B. " + listDapAn.get(1);
-                cauHoi.arrDapAn[2] = "C. " + listDapAn.get(2);
-                cauHoi.arrDapAn[3] = "D. " + listDapAn.get(3);
+                cauHoi.dapAn0 = "A. " + listDapAn.get(0);
+                cauHoi.dapAn1 = "B. " + listDapAn.get(1);
+                cauHoi.dapAn2 = "C. " + listDapAn.get(2);
+                cauHoi.dapAn3 = "D. " + listDapAn.get(3);
 
                 lstCauHoi.add(cauHoi);
             }

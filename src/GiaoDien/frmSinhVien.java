@@ -52,7 +52,7 @@ public class frmSinhVien extends JFrame {
     private JScrollPane spDapAn;
     private final ArrayList<CauHoi> listCauHoi;
     private JTextArea txtCauHoi, txtA, txtB, txtC, txtD;
-    private int soCauHoi, cauHienTai, soCauTraLoi, cauTruoc; 
+    private int soCauHoi, cauHienTai, soCauTraLoi, cauTruoc;
     private JRadioButton[][] rdbtns;
     private JButton[] btnCau;
     private boolean[] cauDung;
@@ -342,22 +342,27 @@ public class frmSinhVien extends JFrame {
          */
         txt.addMouseListener(new MouseListener() {
 
+            @Override
             public void mouseReleased(MouseEvent arg0) {
             }
 
+            @Override
             public void mousePressed(MouseEvent arg0) {
             }
 
+            @Override
             public void mouseExited(MouseEvent arg0) {
                 txt.setBorder(null);
                 txt.setFont(new Font("Segoe ui", Font.PLAIN, 18));
             }
 
+            @Override
             public void mouseEntered(MouseEvent arg0) {
                 txt.setBorder(BorderFactory.createLineBorder(Color.white));
                 txt.setFont(new Font("Segoe ui", Font.BOLD, 19));
             }
 
+            @Override
             public void mouseClicked(MouseEvent arg0) {
                 if (!dangLamBai) {
                     return;
@@ -756,7 +761,7 @@ public class frmSinhVien extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-            System.out.println("exeption: "+e.getMessage());
+            System.out.println("exeption: " + e.getMessage());
         }
         new frmSinhVien().showWindows();
     }
@@ -768,13 +773,12 @@ public class frmSinhVien extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            if (!dangLamBai) {
-                return;
+            if (dangLamBai) {
+                disableLblTick();
+                lblTickA.setIcon(iconChon);
+                lblTickA.setVisible(true);
+                rdbtns[cauHienTai][0].setSelected(true);
             }
-            disableLblTick();
-            lblTickA.setIcon(iconChon);
-            lblTickA.setVisible(true);
-            rdbtns[cauHienTai][0].setSelected(true);
         }
     }
 
