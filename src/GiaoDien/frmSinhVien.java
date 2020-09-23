@@ -711,7 +711,6 @@ public class frmSinhVien extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-
     }
 
     public static void main(String[] args) {

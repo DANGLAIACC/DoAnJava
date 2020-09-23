@@ -1,7 +1,8 @@
 package GiaoDien;
 
+import GiaoDien.frmDatabase;
+import GiaoDien.frmDeThi;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -36,12 +37,14 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import KetNoi.ConnectSQL;
+import KetNoi.ConnectSQL;
 import java.util.Vector;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 import model.DeThi;
 
-public class frmGiangVien {
+public class frmGiangVien extends JFrame{
 
     private JFrame frThis;
     private JTextField txtMaCH;
@@ -63,26 +66,29 @@ public class frmGiangVien {
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-    /**
-     * Launch the application.
-     *
-     * @param args
-     */
+//    public static void main(String[] args) {
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+//            System.out.println("frmGiangVien.main() - Lỗi set giao diện");
+//        }
+//
+//        new frmGiangVien().showWindows();
+//    }
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                frmGiangVien window = new frmGiangVien();
-                window.frThis.setVisible(true);
-
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-                System.out.println("frmGiangVien.main() - Lỗi set giao diện");
-            }
-        });
+        System.out.println("noi dung gi do");
+    }
+    
+    private void showWindows() {
+        this.setSize(837, 481);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
     }
 
     ConnectSQL sql = new ConnectSQL();
-    
+
     public frmGiangVien() {
 
         try {
@@ -340,7 +346,8 @@ public class frmGiangVien {
     private void setCboDT() {
         cboDeThi = new JComboBox<DeThi>();
         try {
-            psGetDeThi = sql.connection.prepareStatement("select * from DeThi");
+            psGetDeThi = sql.connection.prepareStatement("select d.MaDT,TenMH,ThoiGian\n"
+                    + "from dethi d inner join MonHoc m on d.mamh = m.mamh");
             ResultSet resultSet = psGetDeThi.executeQuery();
             while (resultSet.next()) {
                 DeThi dt = new DeThi();
@@ -663,6 +670,7 @@ public class frmGiangVien {
         txtMaCH.setText("");
         setTxt();
         txtMaCH.requestFocus();
+        
     }
 
     private void actXoaDT() {
