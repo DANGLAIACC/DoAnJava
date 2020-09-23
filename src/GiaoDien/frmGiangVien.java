@@ -36,6 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import KetNoi.Access;
+import KetNoi.ConnectSQL;
 import java.util.Vector;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
@@ -44,8 +45,8 @@ import model.DeThi;
 public class frmGiangVien {
 
     private JFrame frThis;
-    private JTextField txtMaCauHoi;
-    private JScrollPane spMaCauHoi;
+    private JTextField txtMaCH;
+    private JScrollPane spMaCH;
     private JComboBox<DeThi> cboDeThi;
     private ArrayList<CauHoi> listCauHoi = new ArrayList<>();
 
@@ -58,7 +59,7 @@ public class frmGiangVien {
     private HashSet<String> listAllMaCH = new HashSet<>();
     private JList<String> lstMaCH;
 
-    HashSet<String> listMaDeThi = new HashSet<>();
+    HashSet<String> listMaDT = new HashSet<>();
 
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
@@ -81,25 +82,27 @@ public class frmGiangVien {
         });
     }
 
-    Access access = new Access();
-
+    ConnectSQL sql = new ConnectSQL();
+    
     public frmGiangVien() {
 
         try {
-            psGetChiTietCauHoi = access.connection.prepareStatement("select c.* from CauHoi c inner join CT_DeThi d "
-                    + "on c.MaCauHoi = d.MaCauHoi where MaDeThi = ?");
-            psThemCH = access.connection.prepareStatement("Insert into CauHoi values(?,?,?,?,?,?,?)");
-            psLuuCH = access.connection.prepareStatement("Update CauHoi set "
+            psGetChiTietCauHoi = sql.connection.prepareStatement("select c.* "
+                    + "from CauHoi c inner join CT_DeThi d "
+                    + "on c.MaCH = d.MaCH where MaDT = ?");
+            psThemCH = sql.connection.prepareStatement("Insert into CauHoi values(?,?,?,?,?,?,?)");
+            psLuuCH = sql.connection.prepareStatement("Update CauHoi set "
                     + "NoiDung = ?,"
                     + "DapAn0 = ?,"
                     + "DapAn1 = ?,"
                     + "DapAn2 = ?,"
                     + "DapAn3 = ?,"
                     + "CapDo = ?"
-                    + "where MaCauHoi = ?");
-            psGetCH = access.connection.prepareStatement("Select * from CauHoi where MaCauHoi = ?");
-            psThemCT_DeThi = access.connection.prepareStatement("insert into CT_DeThi (MaDeThi,MaCauHoi) values (?,?)");
-            psXoaCH = access.connection.prepareStatement("Delete from CT_DeThi where MaDeThi=? and MaCauHoi=?");
+                    + "where MaCH = ?");
+            psGetCH = sql.connection.prepareStatement("Select * from CauHoi where MaCH = ?");
+            psThemCT_DeThi = sql.connection.prepareStatement(
+                    "insert into CT_DeThi (MaDT,MaCH) values (?,?)");
+            psXoaCH = sql.connection.prepareStatement("Delete from CT_DeThi where MaDT=? and MaCH=?");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,10 +114,10 @@ public class frmGiangVien {
 
     private void getListAllMaCH() {
         try {
-            Statement ps = access.connection.createStatement();
-            ResultSet resultSet = ps.executeQuery("Select MaCauHoi from CauHoi");
+            Statement ps = sql.connection.createStatement();
+            ResultSet resultSet = ps.executeQuery("Select MaCH from CauHoi");
             while (resultSet.next()) {
-                listAllMaCH.add(resultSet.getString("MaCauHoi"));
+                listAllMaCH.add(resultSet.getString("MaCH"));
             }
             resultSet.close();
             ps.close();
@@ -191,11 +194,11 @@ public class frmGiangVien {
             }
         });
 
-        txtMaCauHoi.getDocument().addDocumentListener(new DocumentListener() {
+        txtMaCH.getDocument().addDocumentListener(new DocumentListener() {
             private void update() {
-                if (listAllMaCH.contains(txtMaCauHoi.getText()))
+                if (listAllMaCH.contains(txtMaCH.getText()))
 					try {
-                    psGetCH.setString(1, txtMaCauHoi.getText());
+                    psGetCH.setString(1, txtMaCH.getText());
                     ResultSet rs = psGetCH.executeQuery();
                     CauHoi ch = new CauHoi();
                     rs.next();
@@ -212,7 +215,7 @@ public class frmGiangVien {
                 } else {
                     setTxt();
                 }
-//				boolean check = listMaCH.contains(txtMaCauHoi.getText());
+//				boolean check = listMaCH.contains(txtMaCH.getText());
 //				//Mã câu hỏi đã tồn tại trong đề thi thì ko thêm nữa
 //				btnThemCH.setEnabled(!check);
             }
@@ -232,7 +235,7 @@ public class frmGiangVien {
 
         ActionListener isEmpty = new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if (txtMaCauHoi.getText().isEmpty()
+                if (txtMaCH.getText().isEmpty()
                         || txtNoiDung.getText().isEmpty()
                         || txtDapAn0.getText().isEmpty()
                         || txtDapAn1.getText().isEmpty()
@@ -261,9 +264,9 @@ public class frmGiangVien {
         if (chon == 0) {
             try {
                 psXoaCH.setString(1, lblMaDT.getText());
-                psXoaCH.setString(2, txtMaCauHoi.getText());
+                psXoaCH.setString(2, txtMaCH.getText());
                 psXoaCH.execute();
-                int i = listMaCH.indexOf(txtMaCauHoi.getText());
+                int i = listMaCH.indexOf(txtMaCH.getText());
                 listMaCH.remove(i);
                 lstMaCH.setListData(listMaCH);
                 listCauHoi.remove(i);
@@ -286,8 +289,8 @@ public class frmGiangVien {
 		 * Sau cùng là kiểm tra MaCH đã có trong listMaCH.constraint() chưa
 		 * nếu chưa thì thêm mới câu hỏi vào bộ đề insert into CT_CauHoi
 		 * */
-        boolean check1 = listAllMaCH.contains(txtMaCauHoi.getText());
-        boolean check2 = listMaCH.contains(txtMaCauHoi.getText());
+        boolean check1 = listAllMaCH.contains(txtMaCH.getText());
+        boolean check2 = listMaCH.contains(txtMaCH.getText());
         CauHoi ch = getCauHoi();
         if (check1) // đã tồn tại trong bảng CauHoi
 			try {
@@ -320,11 +323,11 @@ public class frmGiangVien {
         if (!check2) {
             try {
                 psThemCT_DeThi.setString(1, lblMaDT.getText());
-                psThemCT_DeThi.setString(2, txtMaCauHoi.getText());
+                psThemCT_DeThi.setString(2, txtMaCH.getText());
                 psThemCT_DeThi.execute();
 
                 listCauHoi.add(ch);
-                listAllMaCH.add(txtMaCauHoi.getText());
+                listAllMaCH.add(txtMaCH.getText());
                 listMaCH.add(ch.mach);
                 lstMaCH.setListData(new Vector<>(listMaCH));
                 lblSoLuong.setText(listMaCH.size() + "");
@@ -338,14 +341,14 @@ public class frmGiangVien {
     private void setCboDT() {
         cboDeThi = new JComboBox<DeThi>();
         try {
-            psGetDeThi = access.connection.prepareStatement("select * from DeThi");
+            psGetDeThi = sql.connection.prepareStatement("select * from DeThi");
             ResultSet resultSet = psGetDeThi.executeQuery();
             while (resultSet.next()) {
                 DeThi dt = new DeThi();
-                dt.setMaDT(resultSet.getString("MaDeThi"));
-                dt.setTenMH(resultSet.getString("TenMonHoc"));
+                dt.setMaDT(resultSet.getString("MaDT"));
+                dt.setTenMH(resultSet.getString("TenMH"));
                 dt.setThoiGian(resultSet.getByte("ThoiGian"));
-                listMaDeThi.add(dt.getMaDT());
+                listMaDT.add(dt.getMaDT());
                 cboDeThi.addItem(dt);
                 frmDatabase.listDeThi.add(dt.toString());
             }
@@ -368,7 +371,7 @@ public class frmGiangVien {
             actLstMaCH(0);
         } else {
             setTxt();
-            txtMaCauHoi.setText("");
+            txtMaCH.setText("");
         }
     }
 
@@ -392,7 +395,7 @@ public class frmGiangVien {
 
     private void actLstMaCH(int index) {
         CauHoi ch = listCauHoi.get(index);
-        txtMaCauHoi.setText(ch.mach);
+        txtMaCH.setText(ch.mach);
         setTxt(ch);
     }
 
@@ -404,7 +407,7 @@ public class frmGiangVien {
 
             while (resultSet.next()) {
                 CauHoi ch = new CauHoi();
-                ch.mach = resultSet.getString("MaCauHoi");
+                ch.mach = resultSet.getString("MaCH");
                 ch.noiDung = resultSet.getString("NoiDung");
                 ch.dapAn0 = resultSet.getString("DapAn0");
                 ch.dapAn1 = resultSet.getString("DapAn1");
@@ -475,13 +478,13 @@ public class frmGiangVien {
 
         btnXoa.setFocusable(false);
 
-        spMaCauHoi = new JScrollPane();
-        spMaCauHoi.setBounds(10, 73, 136, 419);
-        frThis.getContentPane().add(spMaCauHoi);
-        spMaCauHoi.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        spMaCauHoi.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        spMaCH = new JScrollPane();
+        spMaCH.setBounds(10, 73, 136, 419);
+        frThis.getContentPane().add(spMaCH);
+        spMaCH.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        spMaCH.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         TitledBorder tit1 = new TitledBorder(BorderFactory.createLineBorder(Color.DARK_GRAY), "List câu hỏi");
-        spMaCauHoi.setBorder(tit1);
+        spMaCH.setBorder(tit1);
 
         lstMaCH = new JList<String>();
         lstMaCH.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -489,7 +492,7 @@ public class frmGiangVien {
 
         lstMaCH.setOpaque(false);
 
-        spMaCauHoi.setViewportView(lstMaCH);
+        spMaCH.setViewportView(lstMaCH);
         tit1.setTitleFont(new Font("Segoe ui", Font.PLAIN, 15));
 
         pnCauHoi = new JPanel();
@@ -500,11 +503,11 @@ public class frmGiangVien {
         pnCauHoi.setBorder(tit2);
         pnCauHoi.setLayout(null);
 
-        txtMaCauHoi = new JTextField();
-        txtMaCauHoi.setText("MaCauHoi");
-        txtMaCauHoi.setBounds(137, 22, 146, 33);
-        txtMaCauHoi.setFont(new Font("Arial", Font.BOLD, 16));
-        pnCauHoi.add(txtMaCauHoi);
+        txtMaCH = new JTextField();
+        txtMaCH.setText("MaCH");
+        txtMaCH.setBounds(137, 22, 146, 33);
+        txtMaCH.setFont(new Font("Arial", Font.BOLD, 16));
+        pnCauHoi.add(txtMaCH);
 
         txtNoiDung = new JTextArea();
         txtNoiDung.setText("Nội dung câu hỏi");
@@ -647,7 +650,7 @@ public class frmGiangVien {
 
     private CauHoi getCauHoi() {
         CauHoi ch = new CauHoi();
-        ch.mach = txtMaCauHoi.getText();
+        ch.mach = txtMaCH.getText();
         ch.noiDung = txtNoiDung.getText();
         ch.dapAn0 = txtDapAn0.getText();
         ch.dapAn1 = txtDapAn1.getText();
@@ -658,9 +661,9 @@ public class frmGiangVien {
     }
 
     private void actBtnReset() {
-        txtMaCauHoi.setText("");
+        txtMaCH.setText("");
         setTxt();
-        txtMaCauHoi.requestFocus();
+        txtMaCH.requestFocus();
     }
 
     private void actXoaDT() {
@@ -668,10 +671,10 @@ public class frmGiangVien {
         int x = JOptionPane.showConfirmDialog(null, "Xóa đề thi?", "Xác nhận xóa đề thi", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
         if (x == 0) {
             try {
-                PreparedStatement psXoaDT = access.connection.prepareStatement(
-                        "Delete from DeThi where MaDeThi = '" + dt.getMaDT() + "'");
-                PreparedStatement psXoaCTDT = access.connection.prepareStatement(
-                        "Delete from CT_DeThi where MaDeThi = '" + dt.getMaDT() + "'");
+                PreparedStatement psXoaDT = sql.connection.prepareStatement(
+                        "Delete from DeThi where MaDT = '" + dt.getMaDT() + "'");
+                PreparedStatement psXoaCTDT = sql.connection.prepareStatement(
+                        "Delete from CT_DeThi where MaDT = '" + dt.getMaDT() + "'");
                 psXoaCTDT.execute();
                 psXoaDT.execute();
                 cboDeThi.removeItem(dt);
