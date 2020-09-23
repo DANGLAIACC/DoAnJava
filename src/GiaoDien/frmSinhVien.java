@@ -1,4 +1,4 @@
-package GiaoDien2;
+package GiaoDien;
 
 import java.awt.Color;
 import java.awt.Container;

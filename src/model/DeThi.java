@@ -10,6 +10,7 @@ public class DeThi {
 		this.thoiGian=thoiGian;
 	}
 	
+        @Override
 	public String toString() {
 		return maDT+" - "+tenMH;
 	}
@@ -31,5 +32,6 @@ public class DeThi {
 	}
 	public byte getThoiGian() {
 		return thoiGian;
-	} 
+	}
+        
 }

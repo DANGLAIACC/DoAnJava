@@ -35,7 +35,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import KetNoi.Access;
 import KetNoi.ConnectSQL;
 import java.util.Vector;
 import javax.swing.UnsupportedLookAndFeelException;
