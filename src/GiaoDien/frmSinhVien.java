@@ -39,6 +39,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 
 import KetNoi.Access;
+import KetNoi.ConnectSQL;
 import java.sql.SQLException;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
@@ -67,55 +68,16 @@ public class frmSinhVien extends JFrame {
 
     public frmSinhVien() {
         this.listCauHoi = new ArrayList<>();
-        getCauHoi2();
+        getCauHoi();
         this.addControls();
         this.addEvents();
         this.setUndecorated(true);
     }
-
-//	private void getCauHoi() { // by file txt
-//		listCauHoi = new ArrayList<CauHoi>();
-//		File file = new File("arrayTuTuong");
-//		
-//		try {
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF8"));
-//			String string ="";
-//			while((string=reader.readLine())!=null) {
-//				String[] strSplit = string.split("--");
-//				ArrayList<String> arrDapAn = new ArrayList<>();
-//				
-//				arrDapAn.add(strSplit[1]);
-//				arrDapAn.add(strSplit[2]);
-//				arrDapAn.add(strSplit[3]);
-//				arrDapAn.add(strSplit[4]);
-//				
-//				CauHoi cauHoi = new CauHoi();
-//				cauHoi.noiDung = strSplit[0];
-//				cauHoi.dapAnDung = strSplit[1];
-//				
-//				Collections.shuffle(arrDapAn);
-//				
-//				cauHoi.dapAn0 = arrDapAn.get(0);
-//				cauHoi.dapAn1 = arrDapAn.get(1);
-//				cauHoi.dapAn2 = arrDapAn.get(2);
-//				cauHoi.dapAn3 = arrDapAn.get(3);
-//				
-//				listCauHoi.add(cauHoi);
-//			}
-//			reader.close();
-//		} catch(Exception e) {}
-//		
-//		Collections.shuffle(listCauHoi);
-//		soCauHoi = listCauHoi.size();
-//		rdbtns = new JRadioButton[soCauHoi][4];
-//		cauDung = new boolean[soCauHoi];
-//		
-//	}
-    private void getCauHoi2() {//get câu hỏi bằng accdb
+    private void getCauHoi() {//get câu hỏi bằng accdb
         try {
-            Access access = new Access();
+            ConnectSQL sql = new ConnectSQL();
             Statement statement;
-            statement = access.connection.createStatement();
+            statement = sql.connection.createStatement();
             ResultSet result = statement.executeQuery("select * from CauHoi");
             while (result.next()) {
                 ArrayList<String> listDapAn = new ArrayList<>();
@@ -754,7 +716,6 @@ public class frmSinhVien extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-
     }
 
     public static void main(String[] args) {
