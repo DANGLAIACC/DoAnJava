@@ -120,7 +120,7 @@ public class frmDangNhap extends JFrame {
             pnMain.add(lblHuongDan);
 
             try {
-                psDangNhap = sql.connection.prepareStatement("select HoTen from ? where ID=? and password=?");
+                psDangNhap = sql.connection.prepareStatement("select HoTen,role from users where username=? and pwd=?");
 
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -155,39 +155,21 @@ public class frmDangNhap extends JFrame {
     }
 
     private void checkDangNhap() {
-        /*
-		 	Giả sử định danh sinh viên là sv
-		 	giảng viên là gv thì check định danh trước
-         */
-
-        user = txtID.getText().substring(0, 2);
-        StringBuilder query = new StringBuilder("select id,pass from ");
-
-        if (user.equals("gv")) {
-            query.append("GiangVien");
-        } else if (user.equals("sv")) {
-            query.append("SinhVien");
-        } else {
-            JOptionPane.showMessageDialog(null, "Username/Password sai");
-
-            txtID.requestFocusInWindow();
-            txtID.setText("");
-            txtPass.setText("");
-
-            return;
-        }
-
-        query.append(" where (id=? and pass=?)");
         try {
-            PreparedStatement prepared = run.connection.prepareStatement(query.toString());
+            psDangNhap.setString(1, txtID.getText());
+            psDangNhap.setString(2, txtPass.getText());
 
-            prepared.setString(1, txtID.getText());
-            prepared.setString(2, txtPass.getText());
-
-            resultSet = prepared.executeQuery();
+            resultSet = psDangNhap.executeQuery();
 
             if (resultSet.next()) {
-                JOptionPane.showMessageDialog(null, "Đăng nhập thành công");
+                String role = resultSet.getString("role"),
+                        hoTen = resultSet.getString("hoTen");
+                if (role.equals("0")) {
+                    JOptionPane.showMessageDialog(null, "Xin chào: " + hoTen + ". Mở form Giảng viên");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Xin chào: " + hoTen + ". Mở form Sinh viên");
+                }
+
                 System.exit(0);
             } else {
                 JOptionPane.showMessageDialog(null, "Đăng nhập thất bại: user: "
@@ -200,11 +182,6 @@ public class frmDangNhap extends JFrame {
         txtID.requestFocusInWindow();
         txtID.setText("");
         txtPass.setText("");
-    }
-
-    private void checkDangNhap2() {
-        /*
-		 * */
     }
 
     public static void main(String[] args) {

@@ -6,23 +6,18 @@
 
 create database ThiTracNghiem
 go
-use ThiTracNghiem 
+use ThiTracNghiem
 go
-create table SinhVien(
-	MaSV char(10) primary key,
-	MatKhau varchar(20),
-	HoTenSV nvarchar(50)
-)
-go
-create table GiangVien(
-	MaGV varchar(8) primary key,
-	MatKhau varchar(20),
-	HoTenGV varchar(50)	
+create table Users(
+	Username varchar(10) primary key,
+	Pwd varchar(20),
+	HoTen nvarchar(50),
+	Role int
 )
 go
 create table MonHoc(
 	MaMH char(12) primary key,
-	TenMH nvarchar(200)
+	TenMH nvarchar(200) 
 )
 go
 create table CauHoi(
@@ -38,7 +33,7 @@ go
 create table DeThi(
 	MaDT char(4) primary key,
 	MaMH char(12) foreign key references MonHoc(MaMH),
-	MaGV varchar(8) foreign key references GiangVien(MaGV),
+	Username varchar(10) foreign key references users(username),
 	ThoiGian int -- tính theo phút
 )
 go
@@ -48,12 +43,19 @@ create table CT_DeThi(
 	CapDo int
 )
 go 
+create table KetQua(
+	MaDT char(4) foreign key references DeThi(MaDT),
+	Username varchar(10) foreign key references users(username),
+	BatDau datetime,
+	KetThuc datetime,
+	Diem float,
+	primary key (username,batdau)
+)
 
-insert into SinhVien values
-('1811545103','danglai',N'Đặng Quốc Lai')
-go
-insert into GiangVien values
-('tthyen','tthyen',N'Trần Thị Hồng Yến')
+insert into users values
+('tthyen','tthyen',N'Trần Thị Hồng Yến',0),
+('1811545103','danglai',N'Đặng Quốc Lai',1)
+
 go
 insert into MonHoc values
 ('010107001804',N'Tư tưởng Hồ Chí Minh'),
