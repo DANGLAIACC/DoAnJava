@@ -406,5 +406,78 @@ insert into CT_DeThi values
 ('0001', '000000000102',1),
 ('0001', '000000000106',2),
 ('0001', '000000000109',2)
+go
+
+create proc procCauHoi(
+	@MaCH char(12),
+	@NoiDung nvarchar(1200),
+	@DapAn0 nvarchar(400),
+	@DapAn1 nvarchar(400),
+	@DapAn2 nvarchar(400),
+	@DapAn3 nvarchar(400),
+	@MaMH char(12),
+	@MaDT char(4),
+	@CapDo int
+) as
+begin
+/*
+	Nếu mã câu hỏi đã tồn tại thì update bảng CauHoi,
+	nếu chưa tồn tại thì thêm mới vào bảng CauHoi
+*/
+	if exists (select MaCH from CauHoi where MaCH = @MaCH)
+	begin
+		update CauHoi
+		set 
+			NoiDung = @NoiDung,
+			DapAn0 = @DapAn0,
+			DapAn1 = @DapAn1,
+			DapAn2 = @DapAn2,
+			DapAn3 = @DapAn3,
+			MaMh = @MaMH
+		where MaCH = @MaCH
+	end
+	
+	else
+	
+	begin
+		insert into CauHoi values
+		(@MaCH,@NoiDung,@DapAn0,@DapAn1,@DapAn2,@DapAn3,@MaMH)
+
+	end
+
+	insert into CT_DeThi values
+	(@MaDT,@MaCH,@CapDo)
+end
+
+go
+
+create proc procDeThi(
+	@MaDT char(4),
+	@MaMH char(12),
+	@Username char(10),
+	@ThoiGian int
+) as
+begin
+/*
+	Nếu mã đề thi tồn tại thì cập nhật, nếu ko thì thêm mới	
+*/
+	if exists (select MaDT from DeThi where MaDT = @MaDT)
+	begin
+		update DeThi
+		set 
+			MaMH = @MaMH,
+			Username = @Username,
+			ThoiGian = @ThoiGian
+		where MaDT = @MaDT
+	end
+	else
+	begin
+		insert into DeThi values
+		(@MaDT,@MaMH,@Username,@ThoiGian)
+	end
+end
+
+go
 
 select * from DeThi 
+
