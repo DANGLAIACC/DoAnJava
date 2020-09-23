@@ -38,7 +38,6 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
-import KetNoi.Access;
 import KetNoi.ConnectSQL;
 import java.sql.SQLException;
 import javax.swing.UnsupportedLookAndFeelException;

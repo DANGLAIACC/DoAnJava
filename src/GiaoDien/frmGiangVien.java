@@ -1,8 +1,7 @@
 package GiaoDien;
 
-import GiaoDien.frmDatabase;
-import GiaoDien.frmDeThi;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -36,19 +35,15 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-<<<<<<< HEAD
 import KetNoi.Access;
-=======
 import KetNoi.ConnectSQL;
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
-import KetNoi.ConnectSQL;
+import java.awt.Dimension;
 import java.util.Vector;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 import model.DeThi;
 
-public class frmGiangVien extends JFrame{
+public class frmGiangVien {
 
     private JFrame frThis;
     private JTextField txtMaCH;
@@ -65,34 +60,22 @@ public class frmGiangVien extends JFrame{
     private HashSet<String> listAllMaCH = new HashSet<>();
     private JList<String> lstMaCH;
 
-<<<<<<< HEAD
-    public HashSet<String> listMaDT = new HashSet<>();
-=======
     HashSet<String> listMaDT = new HashSet<>();
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
 
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-//    public static void main(String[] args) {
-//        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-//            System.out.println("frmGiangVien.main() - Lỗi set giao diện");
-//        }
-//
-//        new frmGiangVien().showWindows();
-//    }
     public static void main(String[] args) {
-        System.out.println("noi dung gi do");
-    }
-    
-    private void showWindows() {
-        this.setSize(837, 481);
-        this.setResizable(false);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        EventQueue.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                frmGiangVien window = new frmGiangVien();
+                window.frThis.setVisible(true);
+
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+                System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
+            }
+        });
     }
 
     ConnectSQL sql = new ConnectSQL();
@@ -100,13 +83,11 @@ public class frmGiangVien extends JFrame{
     public frmGiangVien() {
 
         try {
-<<<<<<< HEAD
-            psGetChiTietCauHoi = sql.connection.prepareStatement("select c.* from CauHoi c inner join CT_DeThi d "
-=======
-            psGetChiTietCauHoi = sql.connection.prepareStatement("select c.* "
-                    + "from CauHoi c inner join CT_DeThi d "
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
-                    + "on c.MaCH = d.MaCH where MaDT = ?");
+            psGetChiTietCauHoi = sql.connection.prepareStatement(
+                    "select a.*,capdo "
+                    + "from CauHoi a inner join CT_DeThi b on a.mach = b.mach "
+                    + "where MaDT = ?");
+            
             psThemCH = sql.connection.prepareStatement("Insert into CauHoi values(?,?,?,?,?,?,?)");
             psLuuCH = sql.connection.prepareStatement("Update CauHoi set "
                     + "NoiDung = ?,"
@@ -116,13 +97,13 @@ public class frmGiangVien extends JFrame{
                     + "DapAn3 = ?,"
                     + "CapDo = ?"
                     + "where MaCH = ?");
-            psGetCH = sql.connection.prepareStatement("Select * from CauHoi where MaCH = ?");
-<<<<<<< HEAD
+            
+            psGetCH = sql.connection.prepareStatement(
+                    "select a.*,capdo " +
+                    "from CauHoi a inner join CT_DeThi b on a.MaCH = b.MaCH " +
+                    "where a.mach = ?"
+            );
             psThemCT_DeThi = sql.connection.prepareStatement("insert into CT_DeThi (MaDT,MaCH) values (?,?)");
-=======
-            psThemCT_DeThi = sql.connection.prepareStatement(
-                    "insert into CT_DeThi (MaDT,MaCH) values (?,?)");
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
             psXoaCH = sql.connection.prepareStatement("Delete from CT_DeThi where MaDT=? and MaCH=?");
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,12 +343,9 @@ public class frmGiangVien extends JFrame{
     private void setCboDT() {
         cboDeThi = new JComboBox<DeThi>();
         try {
-<<<<<<< HEAD
-            psGetDeThi = sql.connection.prepareStatement("select d.madt,tenMH,thoiGian from DeThi d inner join monhoc m on d.mamh = m.mamh");
-=======
-            psGetDeThi = sql.connection.prepareStatement("select d.MaDT,TenMH,ThoiGian\n"
-                    + "from dethi d inner join MonHoc m on d.mamh = m.mamh");
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
+            psGetDeThi = sql.connection.prepareStatement(
+                    "select madt,TenMH,ThoiGian " 
+                    + "from dethi a inner join monhoc b on a.MaMH= b.mamh");
             ResultSet resultSet = psGetDeThi.executeQuery();
             while (resultSet.next()) {
                 DeThi dt = new DeThi();
@@ -416,7 +394,7 @@ public class frmGiangVien extends JFrame{
         txtDapAn1.setText(ch.dapAn1);
         txtDapAn2.setText(ch.dapAn2);
         txtDapAn3.setText(ch.dapAn3);
-        cboCapDo.setSelectedIndex(ch.capDo - 1);
+        cboCapDo.setSelectedIndex(ch.capDo);
     }
 
     private void actLstMaCH(int index) {
@@ -509,14 +487,16 @@ public class frmGiangVien extends JFrame{
         btnXoa.setFocusable(false);
 
         spMaCH = new JScrollPane();
-        spMaCH.setBounds(10, 73, 136, 419);
+        spMaCH.setBounds(10, 73, 142, 419);
+        spMaCH.getVerticalScrollBar().setPreferredSize(new Dimension(18,Integer.MAX_VALUE));
+        
         frThis.getContentPane().add(spMaCH);
         spMaCH.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         spMaCH.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         TitledBorder tit1 = new TitledBorder(BorderFactory.createLineBorder(Color.DARK_GRAY), "List câu hỏi");
         spMaCH.setBorder(tit1);
 
-        lstMaCH = new JList<String>();
+        lstMaCH = new JList<>();
         lstMaCH.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lstMaCH.setFont(new Font("Arial", Font.PLAIN, 16));
 
@@ -571,26 +551,26 @@ public class frmGiangVien extends JFrame{
         txtDapAn3.setBounds(10, 344, 698, 23);
         pnCauHoi.add(txtDapAn3);
 
-        cboCapDo = new JComboBox<String>();
-        cboCapDo.setBounds(384, 28, 54, 23);
-        cboCapDo.addItem("Cấp 1");
-        cboCapDo.addItem("Cấp 2");
-        cboCapDo.addItem("Cấp 3");
-        cboCapDo.addItem("Cấp 4");
+        cboCapDo = new JComboBox<>();
+        cboCapDo.setBounds(384, 28, 150, 23);
+        cboCapDo.addItem("Nhận biết");
+        cboCapDo.addItem("Thông hiểu");
+        cboCapDo.addItem("Vận dụng");
+        cboCapDo.addItem("Vận dụng cao");
 
         pnCauHoi.add(cboCapDo);
         btnXoa.setFocusable(false);
 
-        lbl1 = new JLabel("Tên môn học");
-        lbl1.setBounds(10, 48, 66, 20);
+        lbl1 = new JLabel("Tên môn học: ");
+        lbl1.setBounds(10, 48, 88, 20);
         frThis.getContentPane().add(lbl1);
 
         lbl2 = new JLabel("Tổng số câu");
-        lbl2.setBounds(485, 48, 66, 20);
+        lbl2.setBounds(485, 48, 70, 20);
         frThis.getContentPane().add(lbl2);
 
         lbl3 = new JLabel("Thời gian");
-        lbl3.setBounds(609, 48, 49, 20);
+        lbl3.setBounds(609, 48, 62, 20);
         frThis.getContentPane().add(lbl3);
 
         JLabel lbl4 = new JLabel("phút");
@@ -599,22 +579,22 @@ public class frmGiangVien extends JFrame{
 
         lblTenMH = new JLabel("Môn học gì gì đó");
         lblTenMH.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblTenMH.setBounds(86, 48, 389, 20);
+        lblTenMH.setBounds(92, 48, 389, 20);
         frThis.getContentPane().add(lblTenMH);
 
         lblSoLuong = new JLabel("100");
         lblSoLuong.setForeground(Color.RED);
         lblSoLuong.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblSoLuong.setBounds(551, 48, 42, 20);
+        lblSoLuong.setBounds(558, 48, 42, 20);
         frThis.getContentPane().add(lblSoLuong);
 
         lblThoiGian = new JLabel("120");
         lblThoiGian.setForeground(Color.BLUE);
         lblThoiGian.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblThoiGian.setBounds(660, 48, 42, 20);
+        lblThoiGian.setBounds(668, 48, 42, 20);
         frThis.getContentPane().add(lblThoiGian);
 
-        lblMaDT = new JLabel(""); // lưu mã đề thi để khỏi tạo đối tượng đề thi mới
+        lblMaDT = new JLabel("");
 
         cboDeThi.setSelectedIndex(0);
 
@@ -694,10 +674,6 @@ public class frmGiangVien extends JFrame{
         txtMaCH.setText("");
         setTxt();
         txtMaCH.requestFocus();
-<<<<<<< HEAD
-=======
-        
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
     }
 
     private void actXoaDT() {

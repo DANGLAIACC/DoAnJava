@@ -29,11 +29,11 @@ public class frmDeThi extends JDialog {
     private JTextField txtMaDeThi, txtTenMH;
     private JButton btnOK, btnHuy;
     private JComboBox<String> cboThoiGian;
-<<<<<<< HEAD
+
     frmGiangVien frmGiangVien1 = new frmGiangVien();
-=======
+
     frmGiangVien frm = new frmGiangVien();
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
+
     private JLabel lblCheckDT;
     private JLabel lblCheckMH;
     private PreparedStatement psThem, psSua;
@@ -128,11 +128,9 @@ public class frmDeThi extends JDialog {
         txtMaDeThi.setBounds(104, 17, 172, 26);
         txtMaDeThi.getDocument().addDocumentListener(new DocumentListener() {
             private void update() {
-<<<<<<< HEAD
+
                 boolean hopLe = frmGiangVien1.listMaDT.contains(txtMaDeThi.getText());
-=======
-                boolean hopLe = frm.listMaDT.contains(txtMaDeThi.getText());
->>>>>>> e2a1f38e6bd887b45ea7ec3f4a8e2ec7248eaab0
+
                 if (hopLe || txtMaDeThi.getText().isEmpty()) {
                     lblCheckDT.setIcon(icoFalse);
                     lblCheckDT.setToolTipText("Không hợp lệ");
