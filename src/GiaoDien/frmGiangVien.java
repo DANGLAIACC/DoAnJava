@@ -37,6 +37,7 @@ import KetNoi.ConnectSQL;
 import java.awt.Dimension;
 import java.sql.CallableStatement;
 import java.util.Vector;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
@@ -48,7 +49,8 @@ public class frmGiangVien extends JFrame {
     private JScrollPane spMaCH;
     private JComboBox<DeThi> cboDeThi;
     private ArrayList<CauHoi> listCauHoi = new ArrayList<>();
-    private String tenGV, userGV;
+    private String tenGV;
+    public static String userGV;
     private JComboBox<String> cboCapDo;
     private JPanel pnButton, pnCauHoi;
     private JLabel lbl1, lbl3, lbl2, lblTenMH, lblSoLuong, lblThoiGian, lblMaDT;
@@ -66,20 +68,23 @@ public class frmGiangVien extends JFrame {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            frmGiangVien window = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
+            frmGiangVien window = new frmGiangVien("tthyen", "Trần Thị Hồng Yến");
             window.setVisible(true);
 
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
             System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
         }
     }
-    
+
     ConnectSQL sql = new ConnectSQL();
-    public frmGiangVien(){}
+
+    public frmGiangVien() {
+    }
+
     public frmGiangVien(String userGV, String tenGV) {
         this.tenGV = tenGV;
         this.userGV = userGV;
-        
+
         try {
             psGetChiTietCauHoi = sql.connection.prepareStatement(
                     "select a.*,capdo "
@@ -103,25 +108,54 @@ public class frmGiangVien extends JFrame {
             );
             psThemCT_DeThi = sql.connection.prepareStatement("insert into CT_DeThi (MaDT,MaCH) values (?,?)");
             psXoaCH = sql.connection.prepareStatement("Delete from CT_DeThi where MaDT=? and MaCH=?");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         setCboDT();
         initialize();
         addEvents();
-        getListAllMaCH();
+        getListAllMaCH(cboDeThi.getSelectedItem().toString());
+
     }
 
-    private void getListAllMaCH() {
+    private ArrayList<CauHoi> lstCauHoi = new ArrayList<>();
+    
+    private void loadAllCauHoi(){
+        try {
+            Statement statement = sql.connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from cauhoi");
+
+            while (resultSet.next()) {
+                CauHoi ch = new CauHoi();
+                ch.mach = resultSet.getString("MaCH");
+                ch.noiDung = resultSet.getString("NoiDung");
+                ch.dapAn0 = resultSet.getString("DapAn0");
+                ch.dapAn1 = resultSet.getString("DapAn1");
+                ch.dapAn2 = resultSet.getString("DapAn2");
+                ch.dapAn3 = resultSet.getString("DapAn3");
+                ch.capDo = resultSet.getByte("CapDo");
+                listCauHoi.add(ch);
+                listMaCH.add(ch.mach);
+            }
+
+            resultSet.close();
+            psGetChiTietCauHoi.close();
+        } catch (SQLException e) {
+        } finally {
+            lstMaCH.setListData(new Vector<>(listMaCH));
+        }
+    }
+    
+    private void getListAllMaCH(String maDT) {
         try {
             Statement ps = sql.connection.createStatement();
-            ResultSet resultSet = ps.executeQuery("Select MaCH from CauHoi");
+            ResultSet resultSet = ps.executeQuery("Select MaCH from CauHoi where MaDT = '"+ maDT + "'");
             while (resultSet.next()) {
                 listAllMaCH.add(resultSet.getString("MaCH"));
             }
             resultSet.close();
             ps.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -195,22 +229,25 @@ public class frmGiangVien extends JFrame {
 
         txtMaCH.getDocument().addDocumentListener(new DocumentListener() {
             private void update() {
-                if (listAllMaCH.contains(txtMaCH.getText()))
-					try {
-                    psGetCH.setString(1, txtMaCH.getText());
-                    ResultSet rs = psGetCH.executeQuery();
-                    CauHoi ch = new CauHoi();
-                    rs.next();
-                    ch.noiDung = rs.getString("NoiDung");
-                    ch.dapAn0 = rs.getString("DapAn0");
-                    ch.dapAn1 = rs.getString("DapAn1");
-                    ch.dapAn2 = rs.getString("DapAn2");
-                    ch.dapAn3 = rs.getString("DapAn3");
-                    ch.capDo = rs.getByte("CapDo");
-                    setTxt(ch);
-                } catch (Exception e) {
-                    System.out.println("Lỗi ở phần addDocumentListener: " + e.getMessage());
-                    e.printStackTrace();
+                if (listAllMaCH.contains(txtMaCH.getText())) {
+                    try {
+                        psGetCH.setString(1, txtMaCH.getText());
+                        ResultSet rs = psGetCH.executeQuery();
+                        CauHoi ch = new CauHoi();
+                        rs.next();
+                        ch.noiDung = rs.getString("NoiDung");
+                        ch.dapAn0 = rs.getString("DapAn0");
+                        ch.dapAn1 = rs.getString("DapAn1");
+                        ch.dapAn2 = rs.getString("DapAn2");
+                        ch.dapAn3 = rs.getString("DapAn3");
+                        ch.capDo = rs.getByte("CapDo");
+                        setTxt(ch);
+                        
+                        rs.close();
+                        psGetCH.close();
+                    } catch (SQLException e) {
+                        System.out.println("ewuitrjksfd: " + e.getMessage());
+                    }
                 } else {
                     setTxt();
                 }
@@ -219,14 +256,17 @@ public class frmGiangVien extends JFrame {
 //				btnThemCH.setEnabled(!check);
             }
 
+            @Override
             public void removeUpdate(DocumentEvent arg0) {
                 update();
             }
 
+            @Override
             public void insertUpdate(DocumentEvent arg0) {
                 update();
             }
 
+            @Override
             public void changedUpdate(DocumentEvent arg0) {
                 update();
             }
@@ -338,7 +378,7 @@ public class frmGiangVien extends JFrame {
     }
 
     private void setCboDT() {
-        cboDeThi = new JComboBox<DeThi>();
+        cboDeThi = new JComboBox<>();
         try {
             psGetDeThi = sql.connection.prepareStatement(
                     "select madt,TenMH,ThoiGian "
@@ -353,8 +393,10 @@ public class frmGiangVien extends JFrame {
                 cboDeThi.addItem(dt);
                 frmDatabase.listDeThi.add(dt.toString());
             }
-        } catch (Exception e) {
-            System.out.println("Dong 349: " + e.getMessage());
+            psGetDeThi.close();
+            resultSet.close();
+        } catch (SQLException e) {
+            System.out.println("Dong 367: " + e.getMessage());
         }
     }
 
@@ -420,27 +462,29 @@ public class frmGiangVien extends JFrame {
             }
 
             resultSet.close();
+            psGetChiTietCauHoi.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             lstMaCH.setListData(new Vector<>(listMaCH));
         }
-
     }
 
     private void actThemDT() {
-        frmDeThi themDT = new frmDeThi(this, "Thêm đề thi");
-        themDT.run();
-        if (themDT.changeDT) // thêm thành công thì sửa lại cái cbo đề thi
+        frmThemDeThi f = new frmThemDeThi(this, true, true, userGV);
+        f.setVisible(true);
+        
+        if(f.added)
         {
-            cboDeThi.addItem(new DeThi(themDT.getMaDT(), themDT.getTenMH(), themDT.getTime()));
+            // đã thêm vào
+            SwingUtilities.updateComponentTreeUI(this);
+            this.invalidate();
+            this.validate();
+            this.repaint();
         }
     }
 
     private void initialize() {
-        setTitle("Sửa bộ đề - "+tenGV);
+        setTitle("Sửa bộ đề - " + tenGV);
         setBounds(100, 100, 900, 546);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -677,10 +721,10 @@ public class frmGiangVien extends JFrame {
         int x = JOptionPane.showConfirmDialog(null, "Xóa đề thi?", "Xác nhận xóa đề thi", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
         if (x == 0) {
             try {
-                String query = "{call procXoaDT(?)}"; 
-                CallableStatement statement = 
-                        sql.connection.prepareCall(query);  
-                statement.setString(1, dt.getMaDT());  
+                String query = "{call procXoaDT(?)}";
+                CallableStatement statement
+                        = sql.connection.prepareCall(query);
+                statement.setString(1, dt.getMaDT());
                 statement.execute();
                 cboDeThi.removeItem(dt);
             } catch (SQLException e) {

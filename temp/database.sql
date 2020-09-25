@@ -437,21 +437,35 @@ end
 
 go
 
-create proc procDeThi(@MaDT char(4), @MaMH char(12), @Username char(10), @ThoiGian int) 
-as begin
-	if exists (select MaDT from DeThi where MaDT = @MaDT)
-		update DeThi set MaMH = @MaMH, Username = @Username, ThoiGian = @ThoiGian
-		where MaDT = @MaDT
-	else
-		insert into DeThi values (@MaDT,@MaMH,@Username,@ThoiGian)
-end
-
-go
-
 create proc procXoaDT(@MaDT char(4)) 
 as begin
 	delete from CT_DeThi where MaDT = @MaDT
 	delete from DeThi where MaDT = @MaDT
+end
+
+go
+
+create proc procDeThi (
+	@MaMH char(12),
+	@TenMH nvarchar(200),
+	@MaDT char(4),
+	@username varchar(10),
+	@ThoiGian int
+)
+as begin
+	if exists (select MaMH from MonHoc where MaMH = @MaMH) -- mã môn học đã tồn tại
+		update MonHoc set TenMH = @TenMH where MaMH = @MaMH
+	else
+		insert into MonHoc values (@MaMH,@TenMH)
+
+	if exists (select MaDT from DeThi where MaDT = @MaDT) -- mã đề thi đã tồn tại
+		update DeThi 
+		set MaMH = @MaMH,
+			Username = @username,
+			ThoiGian = @ThoiGian
+		where MaDT = @MaDT
+	else
+		insert into DeThi values (@MaDT,@MaMH,@username,@ThoiGian)
 end
 
 go
