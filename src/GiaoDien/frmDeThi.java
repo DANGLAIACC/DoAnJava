@@ -21,28 +21,26 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import KetNoi.Access;
+import KetNoi.ConnectSQL;
+import java.awt.HeadlessException;
 
 public class frmDeThi extends JDialog {
 
     private final JPanel contentPanel = new JPanel();
-    private JTextField txtMaDeThi, txtTenMH;
+    private JTextField txtMaDT, txtTenMH;
     private JButton btnOK, btnHuy;
     private JComboBox<String> cboThoiGian;
+    private JLabel lblCheckDT, lblCheckMH;
 
-    frmGiangVien frmGiangVien1 = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
+    frmGiangVien frmGiangVien1 = new frmGiangVien();
 
-    frmGiangVien frm = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
-
-    private JLabel lblCheckDT;
-    private JLabel lblCheckMH;
     private PreparedStatement psThem, psSua;
     ImageIcon icoTrue, icoFalse;
     boolean changeDT = false;// change by DIAlog
     boolean them = true;//mặc định là thêm, nút OK sẽ chuyển về actionThem()
 
     /**
-     * Launch the application. //
+     * Launch the application. 
      */
 //	public static void main(String[] args) {
 //		try {
@@ -55,7 +53,7 @@ public class frmDeThi extends JDialog {
 //	}
 
     public String getMaDT() {
-        return txtMaDeThi.getText();
+        return txtMaDT.getText();
     }
 
     public String getTenMH() {
@@ -63,14 +61,15 @@ public class frmDeThi extends JDialog {
     }
 
     public byte getTime() {
-        if (cboThoiGian.getSelectedIndex() == 0) {
-            return 45;
-        } else if (cboThoiGian.getSelectedIndex() == 1) {
-            return 60;
-        } else if (cboThoiGian.getSelectedIndex() == 2) {
-            return 90;
-        } else {
-            return 120;
+        switch (cboThoiGian.getSelectedIndex()) {
+            case 0:
+                return 45;
+            case 1:
+                return 60;
+            case 2:
+                return 90;
+            default:
+                return 120;
         }
     }
 
@@ -87,29 +86,31 @@ public class frmDeThi extends JDialog {
         // thông báo đang sửa data
         them = false;
         btnOK.setText("Lưu");
-        txtMaDeThi.setText(maDT);
-        txtMaDeThi.setEnabled(false);
+        txtMaDT.setText(maDT);
+        txtMaDT.setEnabled(false);
         lblCheckDT.setIcon(icoTrue);
         txtTenMH.setText(tenMH);
-        if (thoiGian == 45) {
-            cboThoiGian.setSelectedIndex(0);
-        } else if (thoiGian == 60) {
-            cboThoiGian.setSelectedIndex(1);
-        } else if (thoiGian == 90) {
-            cboThoiGian.setSelectedIndex(2);
-        } else {
-            cboThoiGian.setSelectedIndex(3);
+        switch (thoiGian) {
+            case 45:
+                cboThoiGian.setSelectedIndex(0);
+                break;
+            case 60:
+                cboThoiGian.setSelectedIndex(1);
+                break;
+            case 90:
+                cboThoiGian.setSelectedIndex(2);
+                break;
+            default:
+                cboThoiGian.setSelectedIndex(3);
+                break;
         }
     }
-    Access access = new Access();
-
+    private ConnectSQL sql = new ConnectSQL();
     public frmDeThi(JFrame parent, String title) {
         super(parent, title, true);
-
         try {
-
-            psThem = access.connection.prepareStatement("insert into DeThi (MaDeThi,TenMonHoc, ThoiGian) values (?,?,?)");
-            psSua = access.connection.prepareStatement("update DeThi set TenMonHoc = ?, ThoiGian=? where MaDeThi=?");
+            psThem = sql.connection.prepareStatement("insert into DeThi (MaDT,TenMH, ThoiGian) values (?,?,?)");
+            psSua = sql.connection.prepareStatement("update DeThi set TenMH = ?, ThoiGian=? where MaDT=?");
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
@@ -123,15 +124,15 @@ public class frmDeThi extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
 
-        txtMaDeThi = new JTextField();
-        txtMaDeThi.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        txtMaDeThi.setBounds(104, 17, 172, 26);
-        txtMaDeThi.getDocument().addDocumentListener(new DocumentListener() {
+        txtMaDT = new JTextField();
+        txtMaDT.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        txtMaDT.setBounds(104, 17, 172, 26);
+        txtMaDT.getDocument().addDocumentListener(new DocumentListener() {
             private void update() {
 
-                boolean hopLe = frmGiangVien1.listMaDT.contains(txtMaDeThi.getText());
+                boolean hopLe = frmGiangVien.listMaDT.contains(txtMaDT.getText());
 
-                if (hopLe || txtMaDeThi.getText().isEmpty()) {
+                if (hopLe || txtMaDT.getText().isEmpty()) {
                     lblCheckDT.setIcon(icoFalse);
                     lblCheckDT.setToolTipText("Không hợp lệ");
                 } else {
@@ -158,8 +159,8 @@ public class frmDeThi extends JDialog {
             }
         });
 
-        contentPanel.add(txtMaDeThi);
-        txtMaDeThi.setColumns(10);
+        contentPanel.add(txtMaDT);
+        txtMaDT.setColumns(10);
         txtTenMH = new JTextField();
         txtTenMH.setFont(new Font("Tahoma", Font.PLAIN, 16));
         txtTenMH.setColumns(10);
@@ -203,10 +204,10 @@ public class frmDeThi extends JDialog {
         cboThoiGian.setBounds(104, 103, 172, 20);
         contentPanel.add(cboThoiGian);
 
-        JLabel lblMaDeThi = new JLabel("Mã đề thi");
-        lblMaDeThi.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblMaDeThi.setBounds(10, 16, 84, 26);
-        contentPanel.add(lblMaDeThi);
+        JLabel lblMaDT = new JLabel("Mã đề thi");
+        lblMaDT.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        lblMaDT.setBounds(10, 16, 84, 26);
+        contentPanel.add(lblMaDT);
 
         JLabel lblTenMH = new JLabel("Tên môn học");
         lblTenMH.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -259,32 +260,36 @@ public class frmDeThi extends JDialog {
 
     private void actionOK() {
         byte thoiGian;
-        if (cboThoiGian.getSelectedIndex() == 0) {
-            thoiGian = 45;
-        } else if (cboThoiGian.getSelectedIndex() == 1) {
-            thoiGian = 60;
-        } else if (cboThoiGian.getSelectedIndex() == 2) {
-            thoiGian = 90;
-        } else {
-            thoiGian = 120;
+        switch (cboThoiGian.getSelectedIndex()) {
+            case 0:
+                thoiGian = 45;
+                break;
+            case 1:
+                thoiGian = 60;
+                break;
+            case 2:
+                thoiGian = 90;
+                break;
+            default:
+                thoiGian = 120;
+                break;
         }
         try {
             if (them) // thêm đúng thì set query thành insert into
             {
-                psThem.setString(1, txtMaDeThi.getText());
+                psThem.setString(1, txtMaDT.getText());
                 psThem.setString(2, txtTenMH.getText());
                 psThem.setByte(3, thoiGian);
                 psThem.execute();
-                JOptionPane.showMessageDialog(null, "Đã thêm đề thi mã: " + txtMaDeThi.getText());
+                JOptionPane.showMessageDialog(null, "Đã thêm đề thi mã: " + txtMaDT.getText());
             } else {
                 psSua.setString(1, txtTenMH.getText());
                 psSua.setByte(2, thoiGian);
-                psSua.setString(3, txtMaDeThi.getText());
+                psSua.setString(3, txtMaDT.getText());
                 psSua.execute();
-                JOptionPane.showMessageDialog(null, "Đã sửa mã đề thi: " + txtMaDeThi.getText());
+                JOptionPane.showMessageDialog(null, "Đã sửa mã đề thi: " + txtMaDT.getText());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (HeadlessException | SQLException e) {
         }
         changeDT = true;// đã thay đổi (thêm/sửa) thông tin, cập nhật tới cbo đề thi
         dispose();

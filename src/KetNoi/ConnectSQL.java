@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConnectSQL {
 
     public static Connection connection;
-    private static String computer = "DANGLAI_PC\\DANGLAI_PC";
+    private static String computer = "TTTV-02\\SQLEXPRESS01";
     // login SQL with full parameter
 
     public ConnectSQL(String computer, String database, String user, String pass) {
@@ -26,9 +26,10 @@ public class ConnectSQL {
 
     public ConnectSQL(String computer, String database) {
         connection = null;
-        String url = String.format("jdbc:sqlserver://%s:1433;databaseName=%s;integratedSecurity=true;",
+        String url = String.format("jdbc:sqlserver://%s:1433;"
+                + "databaseName=%s;"
+                + "integratedSecurity=true;",
                 computer, database);
-
         try {
             Class.forName(
                     "com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -40,7 +41,9 @@ public class ConnectSQL {
 
     public ConnectSQL() {
         connection = null;
-        String url = String.format("jdbc:sqlserver://%s:1433;databaseName=%s;integratedSecurity=true;",
+        String url = String.format("jdbc:sqlserver://%s:1433;"
+                + "databaseName=%s;"
+                + "integratedSecurity=true;",
                 computer, "ThiTracNghiem");
 
         try {

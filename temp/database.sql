@@ -448,5 +448,16 @@ end
 
 go
 
-select * from DeThi 
+create proc procXoaDT(@MaDT char(4)) 
+as begin
+	delete from CT_DeThi where MaDT = @MaDT
+	delete from DeThi where MaDT = @MaDT
+end
 
+go
+
+select * from users
+
+go
+
+select N'3 tài khoản đăng nhập ban đầu là: 1811545103/danglai, admin/admin, tthyen/tthyen'

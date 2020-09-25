@@ -35,7 +35,10 @@ import javax.swing.event.DocumentListener;
 
 import KetNoi.ConnectSQL;
 import java.awt.Dimension;
+import java.sql.CallableStatement;
 import java.util.Vector;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 import model.DeThi;
 
@@ -55,24 +58,24 @@ public class frmGiangVien extends JFrame {
     private HashSet<String> listAllMaCH = new HashSet<>();
     private JList<String> lstMaCH;
 
-    HashSet<String> listMaDT = new HashSet<>();
+    public static HashSet<String> listMaDT = new HashSet<>();
 
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-//    public static void main(String[] args) {
-//        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//            frmGiangVien window = new frmGiangVien();
-////            window.frThis.setVisible(true);
-//            window.setVisible(true);
-//
-//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
-//            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
-//        }
-//    }
-    ConnectSQL sql = new ConnectSQL();
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            frmGiangVien window = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
+            window.setVisible(true);
 
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
+            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
+        }
+    }
+    
+    ConnectSQL sql = new ConnectSQL();
+    public frmGiangVien(){}
     public frmGiangVien(String userGV, String tenGV) {
         this.tenGV = tenGV;
         this.userGV = userGV;
@@ -150,7 +153,6 @@ public class frmGiangVien extends JFrame {
         });
 
         btnXoa.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 actXoaDT();
             }
@@ -675,12 +677,11 @@ public class frmGiangVien extends JFrame {
         int x = JOptionPane.showConfirmDialog(null, "Xóa đề thi?", "Xác nhận xóa đề thi", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
         if (x == 0) {
             try {
-                PreparedStatement psXoaDT = sql.connection.prepareStatement(
-                        "Delete from DeThi where MaDT = '" + dt.getMaDT() + "'");
-                PreparedStatement psXoaCTDT = sql.connection.prepareStatement(
-                        "Delete from CT_DeThi where MaDT = '" + dt.getMaDT() + "'");
-                psXoaCTDT.execute();
-                psXoaDT.execute();
+                String query = "{call procXoaDT(?)}"; 
+                CallableStatement statement = 
+                        sql.connection.prepareCall(query);  
+                statement.setString(1, dt.getMaDT());  
+                statement.execute();
                 cboDeThi.removeItem(dt);
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Lỗi không xóa được");

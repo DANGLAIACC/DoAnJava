@@ -21,9 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import KetNoi.Access;
 import KetNoi.ConnectSQL;
-import KetNoi.run;
 import java.awt.HeadlessException;
 import java.sql.SQLException;
 import javax.swing.UIManager;
