@@ -36,18 +36,20 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 
 import KetNoi.ConnectSQL;
 import java.sql.SQLException;
+import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 
 public class frmSinhVien extends JFrame {
 
+    private final String username, maDT;
+    private String tenMH;
+
     private JLabel lblPre, lblNext, lblFinish, lblTickA, lblTickB, lblTickC, lblTickD;
     private JLabel lblMonHoc, lblCheChuThich;
-    private String tenMonHoc;
     private long thoiGian;
     private JScrollPane spDapAn;
     private final ArrayList<CauHoi> listCauHoi;
@@ -65,29 +67,62 @@ public class frmSinhVien extends JFrame {
     private JPanel pnDapAn;
     private Timer t;
 
-    public frmSinhVien() {
+    public frmSinhVien(String username, String maDT) {
+        this.username = username;
+        this.maDT = maDT;
+
         this.listCauHoi = new ArrayList<>();
         getCauHoi();
         this.addControls();
         this.addEvents();
         this.setUndecorated(true);
     }
+
     private void getCauHoi() {//get câu hỏi bằng accdb
         try {
             ConnectSQL sql = new ConnectSQL();
             Statement statement;
             statement = sql.connection.createStatement();
-            ResultSet result = statement.executeQuery("select * from CauHoi");
-            while (result.next()) {
+
+            String query = String.format("select TenMH,ThoiGian "
+                    + "from DeThi a inner join MonHoc b on a.MaMH = b.MaMH "
+                    + "where a.MaDT = '%s'", maDT);
+
+            ResultSet result1 = statement.executeQuery(query);
+            System.out.println("query: " + query); 
+
+            if (result1.next()) {
+                tenMH = result1.getString("TenMH");
+                
+                String strThoiGian = result1.getString("ThoiGian");
+                System.out.println("thoiGian: " + strThoiGian);
+
+                thoiGian = Long.parseLong(result1.getString("ThoiGian")) * 60000;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("ajskdfj: " + e.getMessage());
+        }
+
+        try {
+            ConnectSQL sql = new ConnectSQL();
+            Statement statement;
+            statement = sql.connection.createStatement();
+            String query = String.format("select a.MaCH,NoiDung,DapAn0,DapAn1,DapAn2,DapAn3 "
+                    + "from CT_DeThi a inner join CauHoi b on a.MaCH = b.MaCH "
+                    + "where a.MaDT = '%s'", maDT);
+            ResultSet result2 = statement.executeQuery(query);
+
+            while (result2.next()) {
                 ArrayList<String> listDapAn = new ArrayList<>();
-                listDapAn.add(result.getString("DapAn0"));
-                listDapAn.add(result.getString("DapAn1"));
-                listDapAn.add(result.getString("DapAn2"));
-                listDapAn.add(result.getString("DapAn3"));
+                listDapAn.add(result2.getString("DapAn0"));
+                listDapAn.add(result2.getString("DapAn1"));
+                listDapAn.add(result2.getString("DapAn2"));
+                listDapAn.add(result2.getString("DapAn3"));
 
                 CauHoi cauHoi = new CauHoi();
                 cauHoi.mach = "";
-                cauHoi.noiDung = result.getString("NoiDung");
+                cauHoi.noiDung = result2.getString("NoiDung");
                 cauHoi.dapAnDung = listDapAn.get(0);
 
                 Collections.shuffle(listDapAn);
@@ -119,7 +154,7 @@ public class frmSinhVien extends JFrame {
             cauDung = new boolean[soCauHoi];
 
         } catch (SQLException e) {
-            System.out.println("frmSinhVien.getCauHoi2(): " + e.getMessage());
+            System.out.println("tkcskdjfkdjfktlcs: " + e.getMessage());
         }
     }
 
@@ -298,8 +333,8 @@ public class frmSinhVien extends JFrame {
 
     private void addActionPnABCD_Mouse(JTextArea txt, JLabel lblTick) {
         /*
-		  Khi kích vào txtA thì sẽ cho nó dấu check
-		  đồng thời set rdbtns[cauHienTai][0] = selected
+            Khi kích vào txtA thì sẽ cho nó dấu check
+            đồng thời set rdbtns[cauHienTai][0] = selected
          */
         txt.addMouseListener(new MouseListener() {
 
@@ -410,11 +445,11 @@ public class frmSinhVien extends JFrame {
                 g.drawImage(image.getImage(), 0, 0, null);
             }
         };
+        
         pnMain.setLayout(null);
 
         container.add(pnMain);
-        tenMonHoc = "Tư tưởng Hồ Chí Minh";
-        lblMonHoc = new JLabel(tenMonHoc);
+        lblMonHoc = new JLabel(tenMH);
         lblMonHoc.setHorizontalAlignment(SwingConstants.CENTER);
         lblMonHoc.setBounds(4, 3, 626, 38);
         lblMonHoc.setFont(new Font("Arial", Font.BOLD, 22));
@@ -424,9 +459,9 @@ public class frmSinhVien extends JFrame {
         lblTimeRemain.setBounds(668, 5, 164, 32);
         lblTimeRemain.setFont(new Font("Arial", Font.BOLD, 26));
         lblTimeRemain.setForeground(Color.red);
-
-        thoiGian = 6500000; // giả sử đây là time đề thi 65s
+//        thoiGian = 6500000; // giả sử đây là time đề thi 65s
 //		thoiGian *= 60000;// chuyển phút qua milisecond
+
         ActionListener actionTime = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -436,7 +471,7 @@ public class frmSinhVien extends JFrame {
                 lblTimeRemain.setText(str);
                 thoiGian -= 1000;
 
-                if (thoiGian < -1) {
+                if (thoiGian < 0) {
                     actionFinish();
                 }
             }
@@ -709,7 +744,7 @@ public class frmSinhVien extends JFrame {
         return txt;
     }
 
-    private void showWindows() {
+    public void showWindows() {
         this.setSize(837, 481);
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -717,13 +752,13 @@ public class frmSinhVien extends JFrame {
         this.setVisible(true);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // Đặng Quốc Lai
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
             System.out.println("exeption: " + e.getMessage());
         }
-        new frmSinhVien().showWindows();
+        new frmSinhVien("Ten sinh vien", "0001").showWindows();
     }
 
     private class AbstractActionImpl extends AbstractAction {

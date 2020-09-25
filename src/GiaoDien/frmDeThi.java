@@ -30,9 +30,9 @@ public class frmDeThi extends JDialog {
     private JButton btnOK, btnHuy;
     private JComboBox<String> cboThoiGian;
 
-    frmGiangVien frmGiangVien1 = new frmGiangVien();
+    frmGiangVien frmGiangVien1 = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
 
-    frmGiangVien frm = new frmGiangVien();
+    frmGiangVien frm = new frmGiangVien("tthyen","Trần Thị Hồng Yến");
 
     private JLabel lblCheckDT;
     private JLabel lblCheckMH;

@@ -26,6 +26,9 @@ import KetNoi.ConnectSQL;
 import KetNoi.run;
 import java.awt.HeadlessException;
 import java.sql.SQLException;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import security.BCrypt;
 
 public class frmDangNhap extends JFrame {
 
@@ -77,7 +80,7 @@ public class frmDangNhap extends JFrame {
 
     public void showWindows() {
         this.setSize(418, 450);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -120,8 +123,7 @@ public class frmDangNhap extends JFrame {
             pnMain.add(lblHuongDan);
 
             try {
-                psDangNhap = sql.connection.prepareStatement("select HoTen,role from users where username=? and pwd=?");
-
+                psDangNhap = sql.connection.prepareStatement("select HoTen,pwd,role from users where username=?");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -157,31 +159,49 @@ public class frmDangNhap extends JFrame {
     private void checkDangNhap() {
         try {
             psDangNhap.setString(1, txtID.getText());
-            psDangNhap.setString(2, txtPass.getText());
+//            psDangNhap.setString(2, txtPass.getText());
 
             resultSet = psDangNhap.executeQuery();
 
             if (resultSet.next()) {
                 String role = resultSet.getString("role"),
-                        hoTen = resultSet.getString("hoTen");
-                if (role.equals("0")) {
-                    JOptionPane.showMessageDialog(null, "Xin chào: " + hoTen + ". Mở form Giảng viên");
+                        hoTen = resultSet.getString("hoTen"),
+                        pwd = resultSet.getString("pwd");
+//                System.out.printf("Họ tên: %s%nMật khẩu: %s%nRole: %s%n", hoTen, pwd, role);
+                // so sanh với password đã được mã hóa trong database
+                if (BCrypt.checkpw(txtPass.getText(), pwd)) {
+                    System.out.println("Mật khẩu đúng nè");
+                    try {
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } catch (ClassNotFoundException
+                            | IllegalAccessException
+                            | InstantiationException
+                            | UnsupportedLookAndFeelException e) { // DQL
+                    }
+
+                    if (role.equals("0")) {
+                        frmGiangVien f1 = new frmGiangVien(txtID.getText(), hoTen);
+                        f1.setVisible(true);
+                        this.dispose();
+                    } else {
+                        frmSinhVien f2 = new frmSinhVien(txtID.getText(), "0000");
+                        f2.showWindows();
+                        this.dispose();
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Xin chào: " + hoTen + ". Mở form Sinh viên");
+                    JOptionPane.showMessageDialog(null, "Đăng nhập thất bại!");
                 }
 
-                System.exit(0);
             } else {
-                JOptionPane.showMessageDialog(null, "Đăng nhập thất bại: user: "
-                        + txtID.getText() + "; pass: " + txtPass.getText());
+                JOptionPane.showMessageDialog(null, "Đăng nhập thất bại!");
             }
         } catch (HeadlessException | SQLException e) {
             System.out.println("frmDangNhap.checkDangNhap(): " + e.getMessage());
         }
 
-        txtID.requestFocusInWindow();
         txtID.setText("");
         txtPass.setText("");
+        txtID.requestFocusInWindow();
     }
 
     public static void main(String[] args) {

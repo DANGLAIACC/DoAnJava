@@ -2,6 +2,12 @@
 	use master
 	go
 	drop database ThiTracNghiem
+
+
+3 tài khoản được thêm sẵn, có username/password lần lượt là:
+1811545103/danglai
+tthyen/tthyen
+admin/admin
 */
 
 create database ThiTracNghiem
@@ -10,7 +16,7 @@ use ThiTracNghiem
 go
 create table Users(
 	Username varchar(10) primary key,
-	Pwd varchar(20),
+	Pwd varchar(60),
 	HoTen nvarchar(50),
 	Role int
 )
@@ -53,8 +59,9 @@ create table KetQua(
 )
 
 insert into users values
-('tthyen','tthyen',N'Trần Thị Hồng Yến',0),
-('1811545103','danglai',N'Đặng Quốc Lai',1)
+('tthyen','$2a$12$q7ze0LxtK1/M3Jz7ISQFq..xbYWgHskSrea15P4xBeflaagO./Ire',N'Trần Thị Hồng Yến',0),
+('admin','$2a$12$7.joQ86yijEUxfOHXQLmku5TrfoPSUcVb6B1Whj5reXvB4AteuetC',N'Quản trị viên',0),
+('1811545103','$2a$12$WYTqgAKC.tQhtfB1xLUreO5.QUg9GjdVFzD97.6yFTbbM3hMIkp3W',N'Đặng Quốc Lai',1)
 
 go
 insert into MonHoc values
@@ -104,7 +111,7 @@ insert into CauHoi (MaCH,NoiDung,DapAn0,DapAn1,DapAn2,DapAn3,MaMh) values
 ('000000000039', N'Nguyễn Tất Thành lấy tên là Nguyễn Ái Quốc vào thời gian nào?',N'18-6-1919',N'18-6-1918',N'18-6-1920',N'18-6-1921','010107001804'),
 ('000000000040', N'Nguyễn Tất Thành lấy tên là Nguyễn Ái Quốc khi đang ở đâu?',N'Pháp',N'Trung Quốc',N'Anh',N'Liên xô','010107001804'),
 ('000000000041', N'Truyện ngắn đầu tiên của Nguyễn Ái Quốc nhan đề Pari được đăng trên tờ báo nào?',N'L, Humanité',N'Le Paria',N'Pravđa',N'Công lý','010107001804'),
-('000000000042', N'"Luận cương của Lênin làm cho tôi rất cảm động, phấn khởi, sáng tỏ, tin tưởng biết bao. Tôi vui mừng đến phát khóc lên. Ngồi một mình trong buồng mà tôi nói to lên như đang nói trước quần chúng đông đảo: hỡi đồng bào bị đoạ đày đau khổ? Đây là cái cần thiết cho chúng ta, đây là con đường giải phóng của chúng ta". Nguyễn Ái Quốc nói câu ấy khi đang ở đâu?',N'Paris, Pháp',N'Luân Đôn, Anh',N'Quảng Châu, Trung Quốc',N'Máxcơva, Liên Xô','010107001804'),
+('000000000042', N'"Luận cương của Lênin làm cho tôi rất cảm động, phấn khởi, sáng tỏ, tin tưởng biết bao. Tôi vui mừng đến phát khóc lên. Ngồi một mình trong buồng mà tôi nói to lên như đang nói trước quần chúng đông đảo: hỡi đồng bào bị đoạ đày đau khổ?". Nguyễn Ái Quốc nói câu ấy khi đang ở đâu?', N'Paris, Pháp',N'Luân Đôn, Anh',N'Quảng Châu, Trung Quốc',N'Máxcơva, Liên Xô','010107001804'),
 ('000000000043', N'Mùa hè năm 1922 Nguyễn Ái Quốc gặp và làm quen với một số thanh niên Trung Quốc đang học Pari trong đó có:',N'Cả 3 người trên',N'Chu Ân Lai',N'Triệu Thế Viêm',N'Đặng Tiểu Bình','010107001804'),
 ('000000000044', N'Thay mặt Hội những người Việt Nam yêu nước tại Pháp, Nguyễn Ái Quốc gửi đến Hội nghị Vécxay Bản yêu sách của nhân dân Việt Nam gồm mấy điểm?',N'8 điểm',N'6 điểm',N'9 điểm',N'12 điểm','010107001804'),
 ('000000000045', N'Vở kịch Con Rồng tre được Nguyễn Ái Quốc viết nhân dịp vua Khải Định sang Pháp, đó là năm nào?',N'Tháng 5/1922',N'Tháng 5/1923',N'Tháng 5/1925',N'Tháng 5/1927','010107001804'),
@@ -128,7 +135,7 @@ insert into CauHoi (MaCH,NoiDung,DapAn0,DapAn1,DapAn2,DapAn3,MaMh) values
 ('000000000063', N'Tác phẩm "Bản án chế độ thực dân Pháp" được xuất bản lần đầu tiên ở Việt Nam bằng tiếng nào?',N'Tiếng Pháp',N'Tiếng Việt',N'Tiếng Anh',N'Tiếng Nga','010107001804'),
 ('000000000064', N'Tác phẩm "Bản án chế độ thực dân Pháp" được xuất bản lần đầu tiên ở Việt Nam vào năm nào?',N'1946',N'1941',N'1949',N'1960','010107001804'),
 ('000000000065', N'Tác phẩm "Bản án chế độ thực dân Pháp" được nhà xuất bản Sự Thật dịch, in  ra tiếng Việt vào năm nào?',N'1960',N'1950',N'1945',N'1965','010107001804'),
-('000000000066', N'Bản chất của chủ nghĩa tư bản "là một con đỉa có 1 cái vòi bám vào giai cấp vô sản ở chính quốc và 1 cái vòi khác bám vào giai cấp vô sản ở thuộc địa. Nếu muốn giết con vật ấy, người ta phải đồng thời cắt cả hai vòi. Nếu người ta chỉ cắt một vòi thôi thì cái vòi còn lại kia vẫn tiếp tục hút máu của giai cấp vô sản, con vật vẫn tiếp tục sống và cái vòi bị cắt đứt lại sẽ mọc ra" câu nói đó từ trong tác phẩm nào của Nguyễn ÁI Quốc?',N'Bản án chế độ thực dân Pháp',N'Con rồng tre',N'Đường cách mệnh',N'Lênin và các dân tộc phương Đông','010107001804'),
+('000000000066', N'Bản chất của chủ nghĩa tư bản "là một con đỉa có 1 cái vòi bám vào giai cấp vô sản ở chính quốc và 1 cái vòi khác bám vào giai cấp vô sản ở thuộc địa. Nếu muốn giết con vật ấy, người ta phải đồng thời cắt cả hai vòi. Nếu người ta chỉ cắt một vòi thôi thì cái vòi còn lại kia vẫn tiếp tục hút máu của giai cấp vô sản" câu nói đó từ trong tác phẩm nào của Nguyễn ÁI Quốc?',N'Bản án chế độ thực dân Pháp',N'Con rồng tre',N'Đường cách mệnh',N'Lênin và các dân tộc phương Đông','010107001804'),
 ('000000000067', N'Nguyễn Ái Quốc tham gia tổ chức "Hội liên hiệp các dân tộc bị áp bức" vào năm nào?',N'1925',N'1922',N'1921',N'1927','010107001804'),
 ('000000000068', N'Nguyễn Ái Quốc tổ chức "Hội liên hiệp các dân tộc bị áp bức" khi đang ở đâu?',N'Quảng Châu, Trung Quốc',N'Paris, Pháp',N'Cao Bằng, Việt nam',N'U Đon, Thái Lan','010107001804'),
 ('000000000069', N'Tại Quảng Châu, Trung Quốc, Nguyễn Ái Quốc đã mở nhiều lớp huấn luyện đào tạo cán bộ cho cách mạng Việt Nam, đó là vào những năm nào?',N'1925-1927',N'1924-1926',N'1923-1924',N'1927-1929','010107001804'),
@@ -409,72 +416,34 @@ insert into CT_DeThi values
 go
 
 create proc procCauHoi(
-	@MaCH char(12),
-	@NoiDung nvarchar(1200),
-	@DapAn0 nvarchar(400),
-	@DapAn1 nvarchar(400),
-	@DapAn2 nvarchar(400),
-	@DapAn3 nvarchar(400),
-	@MaMH char(12),
-	@MaDT char(4),
-	@CapDo int
+	@MaCH char(12), @NoiDung nvarchar(1200), @DapAn0 nvarchar(400), @DapAn1 nvarchar(400),
+	@DapAn2 nvarchar(400), @DapAn3 nvarchar(400), @MaMH char(12), @MaDT char(4),@CapDo int
 ) as
-begin
-/*
-	Nếu mã câu hỏi đã tồn tại thì update bảng CauHoi,
-	nếu chưa tồn tại thì thêm mới vào bảng CauHoi
-*/
-	if exists (select MaCH from CauHoi where MaCH = @MaCH)
-	begin
+begin 
+	if exists ( select MaCH from CauHoi where MaCH = @MaCH)
 		update CauHoi
-		set 
-			NoiDung = @NoiDung,
-			DapAn0 = @DapAn0,
-			DapAn1 = @DapAn1,
-			DapAn2 = @DapAn2,
-			DapAn3 = @DapAn3,
-			MaMh = @MaMH
-		where MaCH = @MaCH
-	end
-	
+		set NoiDung = @NoiDung, DapAn0 = @DapAn0, DapAn1 = @DapAn1, DapAn2 = @DapAn2,
+			DapAn3 = @DapAn3, MaMh = @MaMH where MaCH = @MaCH
 	else
-	
 	begin
 		insert into CauHoi values
-		(@MaCH,@NoiDung,@DapAn0,@DapAn1,@DapAn2,@DapAn3,@MaMH)
+		(@MaCH,@NoiDung,@DapAn0,
+		@DapAn1,@DapAn2,@DapAn3,@MaMH)
 
+		insert into CT_DeThi values
+		(@MaDT,@MaCH,@CapDo)
 	end
-
-	insert into CT_DeThi values
-	(@MaDT,@MaCH,@CapDo)
 end
 
 go
 
-create proc procDeThi(
-	@MaDT char(4),
-	@MaMH char(12),
-	@Username char(10),
-	@ThoiGian int
-) as
-begin
-/*
-	Nếu mã đề thi tồn tại thì cập nhật, nếu ko thì thêm mới	
-*/
+create proc procDeThi(@MaDT char(4), @MaMH char(12), @Username char(10), @ThoiGian int) 
+as begin
 	if exists (select MaDT from DeThi where MaDT = @MaDT)
-	begin
-		update DeThi
-		set 
-			MaMH = @MaMH,
-			Username = @Username,
-			ThoiGian = @ThoiGian
+		update DeThi set MaMH = @MaMH, Username = @Username, ThoiGian = @ThoiGian
 		where MaDT = @MaDT
-	end
 	else
-	begin
-		insert into DeThi values
-		(@MaDT,@MaMH,@Username,@ThoiGian)
-	end
+		insert into DeThi values (@MaDT,@MaMH,@Username,@ThoiGian)
 end
 
 go

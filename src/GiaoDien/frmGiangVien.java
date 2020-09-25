@@ -1,7 +1,6 @@
 package GiaoDien;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -30,27 +29,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import KetNoi.Access;
 import KetNoi.ConnectSQL;
 import java.awt.Dimension;
 import java.util.Vector;
-import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
 import model.DeThi;
 
-public class frmGiangVien {
+public class frmGiangVien extends JFrame {
 
-    private JFrame frThis;
     private JTextField txtMaCH;
     private JScrollPane spMaCH;
     private JComboBox<DeThi> cboDeThi;
     private ArrayList<CauHoi> listCauHoi = new ArrayList<>();
-
+    private String tenGV, userGV;
     private JComboBox<String> cboCapDo;
     private JPanel pnButton, pnCauHoi;
     private JLabel lbl1, lbl3, lbl2, lblTenMH, lblSoLuong, lblThoiGian, lblMaDT;
@@ -65,29 +60,29 @@ public class frmGiangVien {
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                frmGiangVien window = new frmGiangVien();
-                window.frThis.setVisible(true);
-
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-                System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
-            }
-        });
-    }
-
+//    public static void main(String[] args) {
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            frmGiangVien window = new frmGiangVien();
+////            window.frThis.setVisible(true);
+//            window.setVisible(true);
+//
+//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
+//            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
+//        }
+//    }
     ConnectSQL sql = new ConnectSQL();
 
-    public frmGiangVien() {
-
+    public frmGiangVien(String userGV, String tenGV) {
+        this.tenGV = tenGV;
+        this.userGV = userGV;
+        
         try {
             psGetChiTietCauHoi = sql.connection.prepareStatement(
                     "select a.*,capdo "
                     + "from CauHoi a inner join CT_DeThi b on a.mach = b.mach "
                     + "where MaDT = ?");
-            
+
             psThemCH = sql.connection.prepareStatement("Insert into CauHoi values(?,?,?,?,?,?,?)");
             psLuuCH = sql.connection.prepareStatement("Update CauHoi set "
                     + "NoiDung = ?,"
@@ -97,11 +92,11 @@ public class frmGiangVien {
                     + "DapAn3 = ?,"
                     + "CapDo = ?"
                     + "where MaCH = ?");
-            
+
             psGetCH = sql.connection.prepareStatement(
-                    "select a.*,capdo " +
-                    "from CauHoi a inner join CT_DeThi b on a.MaCH = b.MaCH " +
-                    "where a.mach = ?"
+                    "select a.*,capdo "
+                    + "from CauHoi a inner join CT_DeThi b on a.MaCH = b.MaCH "
+                    + "where a.mach = ?"
             );
             psThemCT_DeThi = sql.connection.prepareStatement("insert into CT_DeThi (MaDT,MaCH) values (?,?)");
             psXoaCH = sql.connection.prepareStatement("Delete from CT_DeThi where MaDT=? and MaCH=?");
@@ -257,7 +252,7 @@ public class frmGiangVien {
     }
 
     private void actBtnDatabase() {
-        frmDatabase database = new frmDatabase(frThis, "Mở Database");
+        frmDatabase database = new frmDatabase(this, "Mở Database");
         database.run();
     }
 
@@ -344,7 +339,7 @@ public class frmGiangVien {
         cboDeThi = new JComboBox<DeThi>();
         try {
             psGetDeThi = sql.connection.prepareStatement(
-                    "select madt,TenMH,ThoiGian " 
+                    "select madt,TenMH,ThoiGian "
                     + "from dethi a inner join monhoc b on a.MaMH= b.mamh");
             ResultSet resultSet = psGetDeThi.executeQuery();
             while (resultSet.next()) {
@@ -434,7 +429,7 @@ public class frmGiangVien {
     }
 
     private void actThemDT() {
-        frmDeThi themDT = new frmDeThi(frThis, "Thêm đề thi");
+        frmDeThi themDT = new frmDeThi(this, "Thêm đề thi");
         themDT.run();
         if (themDT.changeDT) // thêm thành công thì sửa lại cái cbo đề thi
         {
@@ -443,22 +438,21 @@ public class frmGiangVien {
     }
 
     private void initialize() {
-        frThis = new JFrame();
-        frThis.setTitle("Sửa bộ đề");
-        frThis.setBounds(100, 100, 900, 546);
-        frThis.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frThis.setLocationRelativeTo(null);
-        frThis.getContentPane().setLayout(null);
+        setTitle("Sửa bộ đề - "+tenGV);
+        setBounds(100, 100, 900, 546);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        getContentPane().setLayout(null);
         cboDeThi.setBounds(33, 15, 692, 26);
         cboDeThi.setFocusable(false);
         cboDeThi.setFont(new Font("arial", Font.PLAIN, 14));
-        try{
+        try {
             cboDeThi.setSelectedIndex(0);
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        frThis.getContentPane().add(cboDeThi);
+        getContentPane().add(cboDeThi);
 
         btnThem = new JButton();
         btnThem.setIcon(new ImageIcon(this.getClass().getResource("/dataImage/frmGiangVien/add.png")));
@@ -466,7 +460,7 @@ public class frmGiangVien {
         btnThem.setContentAreaFilled(false);
         btnThem.setFocusable(false);
         btnThem.setToolTipText("Thêm đề thi");
-        frThis.getContentPane().add(btnThem);
+        getContentPane().add(btnThem);
 
         btnSua = new JButton();
         btnSua.setIcon(new ImageIcon(this.getClass().getResource("/dataImage/frmGiangVien/edit.png")));
@@ -475,22 +469,22 @@ public class frmGiangVien {
         btnSua.setToolTipText("Sửa đề thi");
         btnSua.setFocusable(false);
 
-        frThis.getContentPane().add(btnSua);
+        getContentPane().add(btnSua);
 
         btnXoa = new JButton();
         btnXoa.setIcon(new ImageIcon(this.getClass().getResource("/dataImage/frmGiangVien/delete.png")));
         btnXoa.setContentAreaFilled(false);
         btnXoa.setBounds(807, 11, 38, 35);
         btnXoa.setToolTipText("Xóa đề thi");
-        frThis.getContentPane().add(btnXoa);
+        getContentPane().add(btnXoa);
 
         btnXoa.setFocusable(false);
 
         spMaCH = new JScrollPane();
         spMaCH.setBounds(10, 73, 142, 419);
-        spMaCH.getVerticalScrollBar().setPreferredSize(new Dimension(18,Integer.MAX_VALUE));
-        
-        frThis.getContentPane().add(spMaCH);
+        spMaCH.getVerticalScrollBar().setPreferredSize(new Dimension(18, Integer.MAX_VALUE));
+
+        getContentPane().add(spMaCH);
         spMaCH.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         spMaCH.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         TitledBorder tit1 = new TitledBorder(BorderFactory.createLineBorder(Color.DARK_GRAY), "List câu hỏi");
@@ -507,7 +501,7 @@ public class frmGiangVien {
 
         pnCauHoi = new JPanel();
         pnCauHoi.setBounds(156, 73, 718, 383);
-        frThis.getContentPane().add(pnCauHoi);
+        getContentPane().add(pnCauHoi);
         TitledBorder tit2 = new TitledBorder(BorderFactory.createLineBorder(Color.darkGray), "Chi tiết câu hỏi");
         tit2.setTitleFont(new Font("Segoe ui", Font.PLAIN, 15));
         pnCauHoi.setBorder(tit2);
@@ -563,36 +557,36 @@ public class frmGiangVien {
 
         lbl1 = new JLabel("Tên môn học: ");
         lbl1.setBounds(10, 48, 88, 20);
-        frThis.getContentPane().add(lbl1);
+        getContentPane().add(lbl1);
 
         lbl2 = new JLabel("Tổng số câu");
         lbl2.setBounds(485, 48, 70, 20);
-        frThis.getContentPane().add(lbl2);
+        getContentPane().add(lbl2);
 
         lbl3 = new JLabel("Thời gian");
         lbl3.setBounds(609, 48, 62, 20);
-        frThis.getContentPane().add(lbl3);
+        getContentPane().add(lbl3);
 
         JLabel lbl4 = new JLabel("phút");
         lbl4.setBounds(695, 48, 29, 20);
-        frThis.getContentPane().add(lbl4);
+        getContentPane().add(lbl4);
 
         lblTenMH = new JLabel("Môn học gì gì đó");
         lblTenMH.setFont(new Font("Tahoma", Font.PLAIN, 14));
         lblTenMH.setBounds(92, 48, 389, 20);
-        frThis.getContentPane().add(lblTenMH);
+        getContentPane().add(lblTenMH);
 
         lblSoLuong = new JLabel("100");
         lblSoLuong.setForeground(Color.RED);
         lblSoLuong.setFont(new Font("Tahoma", Font.BOLD, 16));
         lblSoLuong.setBounds(558, 48, 42, 20);
-        frThis.getContentPane().add(lblSoLuong);
+        getContentPane().add(lblSoLuong);
 
         lblThoiGian = new JLabel("120");
         lblThoiGian.setForeground(Color.BLUE);
         lblThoiGian.setFont(new Font("Tahoma", Font.BOLD, 16));
         lblThoiGian.setBounds(668, 48, 42, 20);
-        frThis.getContentPane().add(lblThoiGian);
+        getContentPane().add(lblThoiGian);
 
         lblMaDT = new JLabel("");
 
@@ -600,7 +594,7 @@ public class frmGiangVien {
 
         pnButton = new JPanel();
         pnButton.setBounds(156, 457, 718, 43);
-        frThis.getContentPane().add(pnButton);
+        getContentPane().add(pnButton);
 
         btnForm1 = new JButton("Form 2 (F)");
         btnForm1.setMnemonic('F');
@@ -696,7 +690,7 @@ public class frmGiangVien {
     }
 
     private void actSuaDT() {
-        frmDeThi suaDT = new frmDeThi(frThis, "Sửa đề thi");
+        frmDeThi suaDT = new frmDeThi(this, "Sửa đề thi");
         suaDT.setLocationRelativeTo(null);
         suaDT.setData(lblMaDT.getText(), lblTenMH.getText(), Byte.parseByte(lblThoiGian.getText()));
         suaDT.run();
