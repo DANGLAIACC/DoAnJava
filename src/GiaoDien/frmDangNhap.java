@@ -170,7 +170,6 @@ public class frmDangNhap extends JFrame {
 //                System.out.printf("Họ tên: %s%nMật khẩu: %s%nRole: %s%n", hoTen, pwd, role);
                 // so sanh với password đã được mã hóa trong database
                 if (BCrypt.checkpw(txtPass.getText(), pwd)) {
-                    System.out.println("Mật khẩu đúng nè");
                     try {
                         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     } catch (ClassNotFoundException
@@ -184,8 +183,8 @@ public class frmDangNhap extends JFrame {
                         f1.setVisible(true);
                         this.dispose();
                     } else {
-                        frmSinhVien f2 = new frmSinhVien(txtID.getText(), "0000");
-                        f2.showWindows();
+                        frmChonDeThi f2 = new frmChonDeThi(txtID.getText(), hoTen);
+                        f2.setVisible(true);
                         this.dispose();
                     }
                 } else {

@@ -39,6 +39,8 @@ import javax.swing.Timer;
 
 import KetNoi.ConnectSQL;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.CauHoi;
@@ -46,8 +48,7 @@ import model.CauHoi;
 public class frmSinhVien extends JFrame {
 
     private final String username, maDT;
-    private String tenMH;
-
+    private String tenMH, batDau, ketThuc;
     private JLabel lblPre, lblNext, lblFinish, lblTickA, lblTickB, lblTickC, lblTickD;
     private JLabel lblMonHoc, lblCheChuThich;
     private long thoiGian;
@@ -67,10 +68,13 @@ public class frmSinhVien extends JFrame {
     private JPanel pnDapAn;
     private Timer t;
 
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
     public frmSinhVien(String username, String maDT) {
         this.username = username;
         this.maDT = maDT;
-
+        this.batDau = dtf.format(LocalDateTime.now());
+        
         this.listCauHoi = new ArrayList<>();
         getCauHoi();
         this.addControls();
@@ -89,14 +93,11 @@ public class frmSinhVien extends JFrame {
                     + "where a.MaDT = '%s'", maDT);
 
             ResultSet result1 = statement.executeQuery(query);
-            System.out.println("query: " + query); 
+//            System.out.println("query: " + query);
 
             if (result1.next()) {
                 tenMH = result1.getString("TenMH");
-                
                 String strThoiGian = result1.getString("ThoiGian");
-                System.out.println("thoiGian: " + strThoiGian);
-
                 thoiGian = Long.parseLong(result1.getString("ThoiGian")) * 60000;
             }
 
@@ -241,6 +242,8 @@ public class frmSinhVien extends JFrame {
             return;
         }
         t.stop();
+        ketThuc = dtf.format(LocalDateTime.now());
+        
         int i = 0;
         int soCauDung = 0;
         String strChon = "";
@@ -291,8 +294,31 @@ public class frmSinhVien extends JFrame {
             }
             i++;
         }
+        float diem = (float) (soCauDung * 10.0 / listCauHoi.size());
         // strChon xong nhiệm vụ, giờ nó sẽ lưu format của điểm
-        strChon = String.format("Số câu đúng: %d câu.%nĐiểm: %.2f.", soCauDung, (soCauDung * 10.0 / listCauHoi.size()));
+        strChon = String.format("Số câu đúng: %d câu.%nĐiểm: %.2f.", soCauDung, diem);
+                
+        // ghi vào database
+        try {
+            ConnectSQL sql = new ConnectSQL();
+            Statement statement;
+            statement = sql.connection.createStatement();
+
+            String query = String.format(
+                    "insert into KetQua values " +
+                    "('%s','%s','%s','%s',%.2f)", maDT,username,batDau,ketThuc,diem);
+            System.out.println("query: "+query);
+            
+            if(statement.execute(query))
+                System.out.println("Thêm thành công");
+            else 
+                System.out.println("Thêm thất bại");
+
+        } catch (SQLException e) {
+            System.out.println("jrekjrkej: " + e.getMessage());
+        }
+        
+        
         JOptionPane.showMessageDialog(null, strChon);
         lblCheChuThich.setVisible(false);
         xemLaiBaiThi();
@@ -445,7 +471,7 @@ public class frmSinhVien extends JFrame {
                 g.drawImage(image.getImage(), 0, 0, null);
             }
         };
-        
+
         pnMain.setLayout(null);
 
         container.add(pnMain);
@@ -752,14 +778,14 @@ public class frmSinhVien extends JFrame {
         this.setVisible(true);
     }
 
-    public static void main(String[] args) { // Đặng Quốc Lai
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-            System.out.println("exeption: " + e.getMessage());
-        }
-        new frmSinhVien("Ten sinh vien", "0001").showWindows();
-    }
+//    public static void main(String[] args) { // Đặng Quốc Lai
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+//            System.out.println("exeption: " + e.getMessage());
+//        }
+//        new frmSinhVien("1811545103", "0001").showWindows();
+//    }
 
     private class AbstractActionImpl extends AbstractAction {
 

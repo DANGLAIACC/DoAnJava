@@ -52,8 +52,8 @@ go
 create table KetQua(
 	MaDT char(4) foreign key references DeThi(MaDT),
 	Username varchar(10) foreign key references users(username),
-	BatDau datetime,
-	KetThuc datetime,
+	BatDau char(19),
+	KetThuc char(19),
 	Diem float,
 	primary key (username,batdau)
 )
