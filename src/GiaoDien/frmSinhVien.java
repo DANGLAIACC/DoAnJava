@@ -688,7 +688,8 @@ public class frmSinhVien extends JFrame {
         enableLblTick_pnDapAn();
         batMauChoDapAn();
 
-        spDapAn.getVerticalScrollBar().setValue(rdbtns[cauHienTai][0].getY() - 157);
+        spDapAn.getVerticalScrollBar()
+                .setValue(rdbtns[cauHienTai][0].getY() - 157);
 
         if (!dangLamBai) {
             showDapAnDung();
@@ -814,3 +815,4 @@ public class frmSinhVien extends JFrame {
         }
     }
 }
+

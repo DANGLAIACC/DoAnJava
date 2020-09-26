@@ -3,7 +3,6 @@ package GiaoDien;
 import KetNoi.ConnectSQL;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import javax.swing.UIManager;
 
 public class frmChonDeThi extends javax.swing.JFrame {
 
@@ -16,9 +15,7 @@ public class frmChonDeThi extends javax.swing.JFrame {
         initComponents();
 
         lblTen.setText(hoTen);
-
         loadCboDeThi();
-
         myCustom();
     }
 
@@ -27,7 +24,8 @@ public class frmChonDeThi extends javax.swing.JFrame {
             ConnectSQL sql = new ConnectSQL();
             Statement statement;
             statement = sql.connection.createStatement();
-            String query = String.format("select MaDT,TenMH from MonHoc a inner join DeThi b on a.MaMH=b.MaMH");
+            String query = String.format("select MaDT,TenMH "
+                    + "from MonHoc a inner join DeThi b on a.MaMH=b.MaMH");
             ResultSet result = statement.executeQuery(query);
             String tenMh, maDT;
             while (result.next()) {
@@ -150,7 +148,7 @@ public class frmChonDeThi extends javax.swing.JFrame {
 //            new frmChonDeThi("1811545103", "Đặng Quốc Lai").setVisible(true);
 //        });
 //    }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVaoThi;
     private javax.swing.JComboBox<String> cboDeThi;

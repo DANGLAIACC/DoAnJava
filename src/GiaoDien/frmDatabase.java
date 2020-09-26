@@ -1,5 +1,6 @@
 package GiaoDien;
 
+import KetNoi.ConnectSQL;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
@@ -26,7 +27,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
-import KetNoi.Access;
 import javax.swing.JTextField;
 import java.awt.Rectangle;
 
@@ -192,14 +192,14 @@ public class frmDatabase extends JDialog {
         setActLstMaCH(lstMaCHNguon);
     }
 
-    Access access = new Access();
+    ConnectSQL sql = new ConnectSQL();
 
     private void setActLstMaCH(JList<String> lst) {
         lst.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String maCH = lst.getSelectedValue();
                 try {
-                    psGetCT_CH = access.connection.prepareStatement("Select NoiDung from CauHoi where MaCauHoi=?");
+                    psGetCT_CH = sql.connection.prepareStatement("Select NoiDung from CauHoi where MaCauHoi=?");
 
                     psGetCT_CH.setString(1, maCH);
                     ResultSet r = psGetCT_CH.executeQuery();
@@ -256,7 +256,7 @@ public class frmDatabase extends JDialog {
 
         ArrayList<String> array = new ArrayList<>();
         try {
-            psGetMaCH = access.connection.prepareStatement("Select c.MaCauHoi from CauHoi c "
+            psGetMaCH = sql.connection.prepareStatement("Select c.MaCauHoi from CauHoi c "
                     + "inner join CT_DeThi d on c.MaCauHoi=d.MaCauHoi where MaDeThi=?");
             psGetMaCH.setString(1, maDich);
             resultSet = psGetMaCH.executeQuery();
@@ -276,7 +276,7 @@ public class frmDatabase extends JDialog {
         ArrayList<String> array = new ArrayList<>();
         if (maNguon.equals("Database")) {
             try {
-                psGetMaCH = access.connection.
+                psGetMaCH = sql.connection.
                         prepareStatement("Select CauHoi.MaCauHoi from CauHoi "
                                 + "left join (select MaCauHoi from CT_DeThi where MaDeThi=?) d "
                                 + "on (CauHoi.MaCauHoi = d.MaCauHoi)"
@@ -295,7 +295,7 @@ public class frmDatabase extends JDialog {
             }
         } else {
             try {
-                psGetMaCH = access.connection.prepareStatement("select c.MaCauHoi from "
+                psGetMaCH = sql.connection.prepareStatement("select c.MaCauHoi from "
                         + "(select MaCauHoi "
                         + "from CT_DeTHi where (MaDeThi = ?)) c "
                         + "left join  "

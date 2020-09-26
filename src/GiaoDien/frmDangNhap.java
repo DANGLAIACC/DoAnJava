@@ -53,7 +53,8 @@ public class frmDangNhap extends JFrame {
 
     private void addControls() {
         Container container = getContentPane();
-        ImageIcon image = new ImageIcon("src/dataImage/frmDangNhap/frmDangNhap.jpg");
+        ImageIcon image = new 
+            ImageIcon("src/dataImage/frmDangNhap/frmDangNhap.jpg");
         pnMain = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
@@ -114,14 +115,16 @@ public class frmDangNhap extends JFrame {
             pnMain.add(btnDangNhap);
 
             JLabel lblHuongDan = new JLabel();
-            lblHuongDan.setText("<html>Nhấn Tab để di chuyển<br>Nhấn Enter để đăng nhập</html>");
+            lblHuongDan.setText("<html>Nhấn Tab để di chuyển<br>"
+                    + "Nhấn Enter để đăng nhập</html>");
             lblHuongDan.setForeground(Color.ORANGE);
             lblHuongDan.setFont(new Font("arial", Font.PLAIN, 13));
             lblHuongDan.setBounds(20, 385, 400, 30);
             pnMain.add(lblHuongDan);
 
             try {
-                psDangNhap = sql.connection.prepareStatement("select HoTen,pwd,role from users where username=?");
+                psDangNhap = sql.connection.prepareStatement("select HoTen,"
+                        + "pwd, role from users where username=?");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -165,11 +168,11 @@ public class frmDangNhap extends JFrame {
                 String role = resultSet.getString("role"),
                         hoTen = resultSet.getString("hoTen"),
                         pwd = resultSet.getString("pwd");
-//                System.out.printf("Họ tên: %s%nMật khẩu: %s%nRole: %s%n", hoTen, pwd, role);
-                // so sanh với password đã được mã hóa trong database
+                
                 if (BCrypt.checkpw(txtPass.getText(), pwd)) {
                     try {
-                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                        UIManager.setLookAndFeel(UIManager
+                                .getSystemLookAndFeelClassName());
                     } catch (ClassNotFoundException
                             | IllegalAccessException
                             | InstantiationException
@@ -177,11 +180,13 @@ public class frmDangNhap extends JFrame {
                     }
 
                     if (role.equals("0")) {
-                        frmGiangVien f1 = new frmGiangVien(txtID.getText(), hoTen);
+                        frmGiangVien f1 = new 
+                            frmGiangVien(txtID.getText(), hoTen);
                         f1.setVisible(true);
                         this.dispose();
                     } else {
-                        frmChonDeThi f2 = new frmChonDeThi(txtID.getText(), hoTen);
+                        frmChonDeThi f2 = new 
+                            frmChonDeThi(txtID.getText(), hoTen);
                         f2.setVisible(true);
                         this.dispose();
                     }
@@ -193,7 +198,7 @@ public class frmDangNhap extends JFrame {
                 JOptionPane.showMessageDialog(null, "Đăng nhập thất bại!");
             }
         } catch (HeadlessException | SQLException e) {
-            System.out.println("frmDangNhap.checkDangNhap(): " + e.getMessage());
+            System.out.println("checkDangNhap(): " + e.getMessage());
         }
 
         txtID.setText("");
@@ -206,3 +211,5 @@ public class frmDangNhap extends JFrame {
     }
 
 }
+
+

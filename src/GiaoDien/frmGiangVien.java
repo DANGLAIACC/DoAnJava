@@ -65,16 +65,16 @@ public class frmGiangVien extends JFrame {
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            frmGiangVien window = new frmGiangVien("admin", "Quản trị viên");
-            window.setVisible(true);
-
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
-            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            frmGiangVien window = new frmGiangVien("admin", "Quản trị viên");
+//            window.setVisible(true);
+//
+//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
+//            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
+//        }
+//    }
 
     ConnectSQL sql = new ConnectSQL();
 
@@ -246,9 +246,6 @@ public class frmGiangVien extends JFrame {
                 } else {
                     setTxt();
                 }
-//				boolean check = listMaCH.contains(txtMaCH.getText());
-//				//Mã câu hỏi đã tồn tại trong đề thi thì ko thêm nữa
-//				btnThemCH.setEnabled(!check);
             }
 
             @Override
@@ -439,33 +436,6 @@ public class frmGiangVien extends JFrame {
         txtMaCH.setText(ch.mach);
         setTxt(ch);
     }
-
-//    private void setLstMaCH(String maDT) {
-//        listMaCH = new Vector<>();
-//        try {
-//            psGetChiTietCauHoi.setString(1, maDT);
-//            ResultSet resultSet = psGetChiTietCauHoi.executeQuery();
-//
-//            while (resultSet.next()) {
-//                CauHoi ch = new CauHoi();
-//                ch.mach = resultSet.getString("MaCH");
-//                ch.noiDung = resultSet.getString("NoiDung");
-//                ch.dapAn0 = resultSet.getString("DapAn0");
-//                ch.dapAn1 = resultSet.getString("DapAn1");
-//                ch.dapAn2 = resultSet.getString("DapAn2");
-//                ch.dapAn3 = resultSet.getString("DapAn3");
-//                ch.capDo = resultSet.getByte("CapDo");
-//                listCauHoi.add(ch);
-//                listMaCH.add(ch.mach);
-//            }
-//
-//            resultSet.close();
-//            psGetChiTietCauHoi.close();
-//        } catch (SQLException e) {
-//        } finally {
-//            lstMaCH.setListData(new Vector<>(listMaCH));
-//        }
-//    }
     private void actThemDT() {
         frmThemDeThi f = new frmThemDeThi(this, true, userGV);
         f.setVisible(true);
