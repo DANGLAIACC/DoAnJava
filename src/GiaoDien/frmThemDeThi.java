@@ -6,6 +6,8 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,24 +17,55 @@ import javax.swing.event.DocumentListener;
 
 public class frmThemDeThi extends javax.swing.JDialog {
 
-    private String username;
-    public boolean added;
-    
+    private final String username;
+    public boolean isChange;
+
     private final ImageIcon iconTrue = new ImageIcon(getClass()
             .getResource("/dataImage/frmGiangVien/true.png")),
             iconFalse = new ImageIcon(getClass()
                     .getResource("/dataImage/frmGiangVien/xoaCauHoi.png"));
     frmGiangVien f = new frmGiangVien();
 
-    public frmThemDeThi(Frame parent, boolean modal, boolean isAdd, String username) {
+    public frmThemDeThi(Frame parent, boolean modal, String username) {
+        super(parent, modal);
+        initComponents();
+        myCustom();
+        setTitle("Thêm môn học - đề thi");
+
+        this.username = username;
+        themMonHoc();
+    }
+
+    public frmThemDeThi(Frame parent, boolean modal, String username, String maMH, String maDT, String tenMH, byte thoiGian) {
         super(parent, modal);
         initComponents();
         myCustom();
 
+        setTitle("Sửa môn học - đề thi");
         this.username = username;
-        if (isAdd) {
-            themMonHoc();
+
+        txtMaDT.setText(maDT);
+        txtTenMH.setText(tenMH);
+        txtMaMH.setText(maMH);
+        txtMaDT.setEnabled(false);
+
+        switch (thoiGian) {
+            case 30:
+                cboThoiGian.setSelectedIndex(0);
+                break;
+            case 45:
+                cboThoiGian.setSelectedIndex(1);
+                break;
+            case 60:
+                cboThoiGian.setSelectedIndex(2);
+                break;
+            case 90:
+                cboThoiGian.setSelectedIndex(3);
+                break;
+            default:
+                cboThoiGian.setSelectedIndex(4);
         }
+
     }
 
 //    private void loadMonHoc() {
@@ -175,8 +208,8 @@ public class frmThemDeThi extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Thêm đề thi");
-        setMinimumSize(new java.awt.Dimension(473, 195));
-        setPreferredSize(new java.awt.Dimension(473, 195));
+        setMinimumSize(new java.awt.Dimension(473, 200));
+        setPreferredSize(new java.awt.Dimension(473, 200));
         getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -283,23 +316,27 @@ public class frmThemDeThi extends javax.swing.JDialog {
             txtMaDT.requestFocus();
         } else {
             ConnectSQL sql = new ConnectSQL();
-            try{
+            try {
                 Statement statement = sql.connection.createStatement();
-                ResultSet result =  statement.executeQuery(String.format("select TenMH "
-                        + "from MonHoc where MaMH = %s",txtMaMH.getText()));
-                if(result.next()){
+                ResultSet result = statement.executeQuery(String.format("select TenMH "
+                        + "from MonHoc where MaMH = %s", txtMaMH.getText()));
+                if (result.next()) {
                     String oldTenMH = result.getString("TenMH");
-                    String message = String.format("Mã môn học đã tồn tại với tên '%s'.\r\nBạn có muốn cập nhật tên mới thành: '%s' không?", oldTenMH,txtTenMH.getText());
+                    String message = String.format(
+                            "Mã môn học đã tồn tại với tên '%s'.\r\n"
+                            + "Bạn có muốn cập nhật tên mới thành: '%s' không?", oldTenMH, txtTenMH.getText());
                     int i = JOptionPane.showConfirmDialog(null, message,
-        "Cập nhật tên môn học", JOptionPane.OK_CANCEL_OPTION);
-                    
-                    if(i==1)
+                            "Cập nhật tên môn học", JOptionPane.OK_CANCEL_OPTION);
+
+                    if (i == 1) {
+                        System.out.println("Nhấn cancel");
                         return;
+                    }
                 }
-            } catch(SQLException e){
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            
+
             int thoiGian;
             switch (cboThoiGian.getSelectedIndex()) {
                 case 0:
@@ -317,9 +354,9 @@ public class frmThemDeThi extends javax.swing.JDialog {
                 default:
                     thoiGian = 120;
             }
+            CallableStatement statement = null;
             try {
                 String query = "{call procDeThi(?,?,?,?,?)}";
-                CallableStatement statement;
                 statement = ConnectSQL.connection.prepareCall(query);
                 statement.setString(1, txtMaMH.getText());
                 statement.setString(2, txtTenMH.getText());
@@ -327,15 +364,22 @@ public class frmThemDeThi extends javax.swing.JDialog {
                 statement.setString(4, frmGiangVien.userGV);
                 statement.setInt(5, thoiGian);
 
-                if(statement.execute()){
+                if (statement.execute()) {
                     JOptionPane.showMessageDialog(null, "Thêm thành công");
-                    added = true;
+                    isChange = true;
                 }
-                
-                statement.close();
+
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Lỗi không thêm được");
                 System.out.println(e.getMessage());
+            }
+            
+            finally{
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.out.println("jsdkfsldfjkl: "+e.getMessage());
+                }
             }
 
         }

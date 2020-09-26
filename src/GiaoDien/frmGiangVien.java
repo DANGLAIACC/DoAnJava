@@ -48,7 +48,7 @@ public class frmGiangVien extends JFrame {
     private JTextField txtMaCH;
     private JScrollPane spMaCH;
     private JComboBox<DeThi> cboDeThi;
-    private ArrayList<CauHoi> listCauHoi = new ArrayList<>();
+    private ArrayList<CauHoi> listCauHoi;
     private String tenGV;
     public static String userGV;
     private JComboBox<String> cboCapDo;
@@ -68,7 +68,7 @@ public class frmGiangVien extends JFrame {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            frmGiangVien window = new frmGiangVien("tthyen", "Trần Thị Hồng Yến");
+            frmGiangVien window = new frmGiangVien("admin", "Quản trị viên");
             window.setVisible(true);
 
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
@@ -83,8 +83,9 @@ public class frmGiangVien extends JFrame {
 
     public frmGiangVien(String userGV, String tenGV) {
         this.tenGV = tenGV;
-        this.userGV = userGV;
+        frmGiangVien.userGV = userGV;
 
+        listCauHoi = new ArrayList<>();
         try {
             psGetChiTietCauHoi = sql.connection.prepareStatement(
                     "select a.*,capdo "
@@ -114,52 +115,46 @@ public class frmGiangVien extends JFrame {
         setCboDT();
         initialize();
         addEvents();
-        getListAllMaCH(cboDeThi.getSelectedItem().toString());
-
+        loadCH_MaDT(cboDeThi.getSelectedItem().toString());
+        
     }
 
-    private ArrayList<CauHoi> lstCauHoi = new ArrayList<>();
-    
-    private void loadAllCauHoi(){
+    /**
+     * Tải danh sách câu hỏi từ CSDL qua mã đề thi
+     *
+     * @param maDT Mã đề thi
+     */
+    private void loadCH_MaDT(String maDT) {
+        listMaCH = new Vector<>();
         try {
             Statement statement = sql.connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from cauhoi");
+            String query = "select a.MaCH,NoiDung,DapAn0,DapAn1,DapAn2,DapAn3,CapDo "
+                    + "from CauHoi a inner join CT_DeThi b on a.mach = b.mach "
+                    + "where MaDT = '" + maDT + "'";
 
-            while (resultSet.next()) {
-                CauHoi ch = new CauHoi();
-                ch.mach = resultSet.getString("MaCH");
-                ch.noiDung = resultSet.getString("NoiDung");
-                ch.dapAn0 = resultSet.getString("DapAn0");
-                ch.dapAn1 = resultSet.getString("DapAn1");
-                ch.dapAn2 = resultSet.getString("DapAn2");
-                ch.dapAn3 = resultSet.getString("DapAn3");
-                ch.capDo = resultSet.getByte("CapDo");
-                listCauHoi.add(ch);
-                listMaCH.add(ch.mach);
+            try (ResultSet resultSet = statement.executeQuery(query)) {
+                CauHoi c;
+                while (resultSet.next()) {
+                    c = new CauHoi();
+                    c.mach = resultSet.getString("MaCH");
+                    c.noiDung = resultSet.getString("NoiDung");
+                    c.dapAn0 = resultSet.getString("DapAn0");
+                    c.dapAn1 = resultSet.getString("DapAn1");
+                    c.dapAn2 = resultSet.getString("DapAn2");
+                    c.dapAn3 = resultSet.getString("DapAn3");
+                    c.capDo = resultSet.getByte("CapDo");
+                    listCauHoi.add(c);
+                    listMaCH.add(c.mach);
+                }
+
+                lstMaCH.setListData(new Vector<>(listMaCH));
+                lblSoLuong.setText(listCauHoi.size()+"");
             }
-
-            resultSet.close();
-            psGetChiTietCauHoi.close();
         } catch (SQLException e) {
-        } finally {
-            lstMaCH.setListData(new Vector<>(listMaCH));
+            System.out.println("jsdkfsjfdk: " + e.getMessage());
         }
     }
     
-    private void getListAllMaCH(String maDT) {
-        try {
-            Statement ps = sql.connection.createStatement();
-            ResultSet resultSet = ps.executeQuery("Select MaCH from CauHoi where MaDT = '"+ maDT + "'");
-            while (resultSet.next()) {
-                listAllMaCH.add(resultSet.getString("MaCH"));
-            }
-            resultSet.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     private void addEvents() {
         btnXoaCH.addActionListener(new ActionListener() {
 
@@ -242,7 +237,7 @@ public class frmGiangVien extends JFrame {
                         ch.dapAn3 = rs.getString("DapAn3");
                         ch.capDo = rs.getByte("CapDo");
                         setTxt(ch);
-                        
+
                         rs.close();
                         psGetCH.close();
                     } catch (SQLException e) {
@@ -320,19 +315,19 @@ public class frmGiangVien extends JFrame {
 
     private void actLuuCH() {
         /*
-		 * btnLuuCH xử lý như sau:
-		 * Kiểm tra MaCH đã tồn tại trong table CauHoi chưa? nếu chưa thì Insert into
-		 * Nếu đã tồn tại thì 
-		 * Kiểm tra các txt có bị thay đổi ko? nếu có thì update lại bảng CauHoi
-		 * 
-		 * Sau cùng là kiểm tra MaCH đã có trong listMaCH.constraint() chưa
-		 * nếu chưa thì thêm mới câu hỏi vào bộ đề insert into CT_CauHoi
-		 * */
+        * btnLuuCH xử lý như sau:
+        * Kiểm tra MaCH đã tồn tại trong table CauHoi chưa? nếu chưa thì Insert into
+        * Nếu đã tồn tại thì 
+        * Kiểm tra các txt có bị thay đổi ko? nếu có thì update lại bảng CauHoi
+        * 
+        * Sau cùng là kiểm tra MaCH đã có trong listMaCH.constraint() chưa
+        * nếu chưa thì thêm mới câu hỏi vào bộ đề insert into CT_CauHoi
+         */
         boolean check1 = listAllMaCH.contains(txtMaCH.getText());
         boolean check2 = listMaCH.contains(txtMaCH.getText());
         CauHoi ch = getCauHoi();
         if (check1) // đã tồn tại trong bảng CauHoi
-			try {
+            try {
             psLuuCH.setString(1, ch.noiDung);
             psLuuCH.setString(2, ch.dapAn0);
             psLuuCH.setString(3, ch.dapAn1);
@@ -342,9 +337,10 @@ public class frmGiangVien extends JFrame {
             psLuuCH.setString(7, ch.mach);
 
             psLuuCH.execute();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Không thể cập nhật câu hỏi.");
-            e.printStackTrace();
+            System.out.println("sjdkfjsdlf: " + e.getMessage());
+
         } else 
 			try {
             psThemCH.setString(1, ch.mach);
@@ -381,41 +377,43 @@ public class frmGiangVien extends JFrame {
         cboDeThi = new JComboBox<>();
         try {
             psGetDeThi = sql.connection.prepareStatement(
-                    "select madt,TenMH,ThoiGian "
-                    + "from dethi a inner join monhoc b on a.MaMH= b.mamh");
-            ResultSet resultSet = psGetDeThi.executeQuery();
-            while (resultSet.next()) {
-                DeThi dt = new DeThi();
-                dt.setMaDT(resultSet.getString("MaDT"));
-                dt.setTenMH(resultSet.getString("TenMH"));
-                dt.setThoiGian(resultSet.getByte("ThoiGian"));
-                listMaDT.add(dt.getMaDT());
-                cboDeThi.addItem(dt);
-                frmDatabase.listDeThi.add(dt.toString());
+                    "select MaDT,TenMH,ThoiGian, a.MaMH "
+                    + "from dethi a inner join monhoc b on a.MaMH = b.MaMH");
+            try (ResultSet resultSet = psGetDeThi.executeQuery()) {
+                while (resultSet.next()) {
+                    DeThi dt = new DeThi();
+                    dt.setMaDT(resultSet.getString("MaDT"));
+                    dt.setTenMH(resultSet.getString("TenMH"));
+                    dt.setThoiGian(resultSet.getByte("ThoiGian"));
+                    dt.setMaMH(resultSet.getString("MaMH"));
+                    listMaDT.add(dt.getMaDT());
+                    cboDeThi.addItem(dt);
+                    frmDatabase.listDeThi.add(dt.toString());
+                }
+                psGetDeThi.close();
             }
-            psGetDeThi.close();
-            resultSet.close();
         } catch (SQLException e) {
-            System.out.println("Dong 367: " + e.getMessage());
+            System.out.println("Dong 414: " + e.getMessage());
         }
     }
 
     private void actCboDT() {
         DeThi dt = (DeThi) cboDeThi.getSelectedItem();
         listCauHoi.clear();
-        setLstMaCH(dt.getMaDT());
-        lblTenMH.setText(dt.getTenMH());
-        lblMaDT.setText(dt.getMaDT());
-        lblSoLuong.setText(listCauHoi.size() + "");
-        lblThoiGian.setText(dt.getThoiGian() + "");
+        
+        loadCH_MaDT(dt.getMaDT());
 
         if (listCauHoi.size() > 0) {
             lstMaCH.setSelectedIndex(0);
             actLstMaCH(0);
+            
+            lblTenMH.setText(dt.getTenMH());
+            lblThoiGian.setText(dt.getThoiGian()+"");
         } else {
             setTxt();
             txtMaCH.setText("");
         }
+
     }
 
     private void setTxt() {
@@ -442,39 +440,37 @@ public class frmGiangVien extends JFrame {
         setTxt(ch);
     }
 
-    private void setLstMaCH(String maDT) {
-        listMaCH = new Vector<>();
-        try {
-            psGetChiTietCauHoi.setString(1, maDT);
-            ResultSet resultSet = psGetChiTietCauHoi.executeQuery();
-
-            while (resultSet.next()) {
-                CauHoi ch = new CauHoi();
-                ch.mach = resultSet.getString("MaCH");
-                ch.noiDung = resultSet.getString("NoiDung");
-                ch.dapAn0 = resultSet.getString("DapAn0");
-                ch.dapAn1 = resultSet.getString("DapAn1");
-                ch.dapAn2 = resultSet.getString("DapAn2");
-                ch.dapAn3 = resultSet.getString("DapAn3");
-                ch.capDo = resultSet.getByte("CapDo");
-                listCauHoi.add(ch);
-                listMaCH.add(ch.mach);
-            }
-
-            resultSet.close();
-            psGetChiTietCauHoi.close();
-        } catch (SQLException e) {
-        } finally {
-            lstMaCH.setListData(new Vector<>(listMaCH));
-        }
-    }
-
+//    private void setLstMaCH(String maDT) {
+//        listMaCH = new Vector<>();
+//        try {
+//            psGetChiTietCauHoi.setString(1, maDT);
+//            ResultSet resultSet = psGetChiTietCauHoi.executeQuery();
+//
+//            while (resultSet.next()) {
+//                CauHoi ch = new CauHoi();
+//                ch.mach = resultSet.getString("MaCH");
+//                ch.noiDung = resultSet.getString("NoiDung");
+//                ch.dapAn0 = resultSet.getString("DapAn0");
+//                ch.dapAn1 = resultSet.getString("DapAn1");
+//                ch.dapAn2 = resultSet.getString("DapAn2");
+//                ch.dapAn3 = resultSet.getString("DapAn3");
+//                ch.capDo = resultSet.getByte("CapDo");
+//                listCauHoi.add(ch);
+//                listMaCH.add(ch.mach);
+//            }
+//
+//            resultSet.close();
+//            psGetChiTietCauHoi.close();
+//        } catch (SQLException e) {
+//        } finally {
+//            lstMaCH.setListData(new Vector<>(listMaCH));
+//        }
+//    }
     private void actThemDT() {
-        frmThemDeThi f = new frmThemDeThi(this, true, true, userGV);
+        frmThemDeThi f = new frmThemDeThi(this, true, userGV);
         f.setVisible(true);
-        
-        if(f.added)
-        {
+
+        if (f.isChange) {
             // đã thêm vào
             SwingUtilities.updateComponentTreeUI(this);
             this.invalidate();
@@ -735,15 +731,14 @@ public class frmGiangVien extends JFrame {
     }
 
     private void actSuaDT() {
-        frmDeThi suaDT = new frmDeThi(this, "Sửa đề thi");
-        suaDT.setLocationRelativeTo(null);
-        suaDT.setData(lblMaDT.getText(), lblTenMH.getText(), Byte.parseByte(lblThoiGian.getText()));
-        suaDT.run();
-        if (suaDT.changeDT) // thêm sửa thì sửa lại cái cbo đề thi
-        {
-            DeThi dt = (DeThi) cboDeThi.getSelectedItem();
+        DeThi dt = (DeThi) cboDeThi.getSelectedItem();
+        frmThemDeThi f = new frmThemDeThi(this, true, userGV,
+                dt.getMaMH(), dt.getMaDT(), dt.getTenMH(), dt.getThoiGian());
+        f.setVisible(true);
+
+        if (f.isChange) {
             cboDeThi.removeItem(dt);
-            dt = new DeThi(suaDT.getMaDT(), suaDT.getTenMH(), suaDT.getTime());
+            dt = new DeThi(dt.getMaDT(), dt.getTenMH(), dt.getThoiGian());
             cboDeThi.addItem(dt);
             cboDeThi.setSelectedItem(dt);
         }

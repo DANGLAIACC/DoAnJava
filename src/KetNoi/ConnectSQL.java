@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConnectSQL {
 
     public static Connection connection;
-    private static String computer = "TTTV-02\\SQLEXPRESS01";
+    private static String computer = "DANGLAI_PC\\DANGLAI_PC";
     // login SQL with full parameter
 
     public ConnectSQL(String computer, String database, String user, String pass) {
