@@ -65,16 +65,16 @@ public class frmGiangVien extends JFrame {
     PreparedStatement psGetChiTietCauHoi, psGetDeThi, psThemCH,
             psGetCH, psLuuCH, psThemCT_DeThi, psXoaCH;
 
-//    public static void main(String[] args) {
-//        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//            frmGiangVien window = new frmGiangVien("admin", "Quản trị viên");
-//            window.setVisible(true);
-//
-//        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
-//            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
-//        }
-//    }
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            frmGiangVien window = new frmGiangVien("admin", "Quản trị viên");
+            window.setVisible(true);
+
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) { // DQL
+            System.out.println("frmGiangVien2.main() - Lỗi set giao diện");
+        }
+    }
 
     ConnectSQL sql = new ConnectSQL();
 
@@ -115,7 +115,6 @@ public class frmGiangVien extends JFrame {
         setCboDT();
         initialize();
         addEvents();
-        loadCH_MaDT(cboDeThi.getSelectedItem().toString());
         
     }
 
@@ -149,6 +148,8 @@ public class frmGiangVien extends JFrame {
 
                 lstMaCH.setListData(new Vector<>(listMaCH));
                 lblSoLuong.setText(listCauHoi.size()+"");
+                
+                System.out.println("listMaCH.size: "+listMaCH.size());
             }
         } catch (SQLException e) {
             System.out.println("jsdkfsjfdk: " + e.getMessage());
@@ -158,6 +159,7 @@ public class frmGiangVien extends JFrame {
     private void addEvents() {
         btnXoaCH.addActionListener(new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 actXoaCH();
             }
@@ -639,7 +641,7 @@ public class frmGiangVien extends JFrame {
 //		btnThemCH.setFocusable(false);
 //		btnThemCH.setEnabled(false);
 //		btnThemCH.setMargin(new Insets(2, 8, 2, 8));
-//		
+//
         btnLuuCH = new JButton("Lưu (S)");
         btnLuuCH.setMnemonic('S');
         pnButton.add(btnLuuCH);
